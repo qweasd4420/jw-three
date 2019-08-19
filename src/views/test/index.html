@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <link rel="stylesheet" href="css/index.css" />
+  <link rel="stylesheet" href="css/scroll-diy.css"/>
+  <link rel="stylesheet" href="css/filepage.css"/>
+  <meta charset="utf-8">
+  <title>云签</title>
+  <script src="js/jquery-1.11.1.min.js" ></script>
+  <script src="js/scroll-diy.js"></script>
+  <script src="js/filepage.js"></script>
+  <script src="js/confirm.js"></script>
+  <script>
+    $(function(){
+      $(filepage());
+    });
+  </script>
+</head>
+<body>
+<OBJECT style="display:block;height:0;" ID="EKeyLogin"
+        CLASSID="CLSID:EFD71808-F1E3-4BB6-9475-94A8CA3C13D0"></OBJECT>
+<!--顶部-->
+<div class="headbox">
+  <img class="logo" src="images/logo.png">
+  <span>国家电网公司电力交易中心服务器文件签章系统</span>
+</div>
+<!--切换-->
+<!--<ul class="tagbox">
+        <a href="commonpage.html"><li class="com active"><i class="icon_20" style="background-position: -40px -100px;"></i>文档列表</li></a>
+    </ul>-->
+<table class="mainbox">
+  <tbody>
+  <tr>
+    <td valign="top" width="200">
+      <!--筛选-->
+      <div class="screenbox scrdiy">
+        <div>
+          <div class="screen_search">
+            <div>
+              <input type="text" placeholder="搜索文档" autocomplete="off">
+              <i class="icon_20" style="background-position: -0px -60px;"></i>
+            </div>
+          </div>
+          <dl class="screen_list">
+            <dt><i class="icon_20" style="background-position: -0px -40px;"></i>排序</dt>
+            <dd class="num_time active">时间</dd>
+            <dd class="num_name">名称</dd>
+            <dl>
+              <dl class="screen_list">
+                <dt><i class="icon_20" style="background-position: -20px -40px;"></i>状态</dt>
+                <dd class="time_all active">全部<span></span></dd>
+                <dd class="hassign">已签署<span></span></dd>
+                <dd class="nosign">未签署<span></span></dd>
+                <dl>
+        </div>
+      </div>
+    </td>
+    <td valign="top" class="aaa">
+      <div class="file_headbox">
+        <div class="file_head">
+          <div class="file_checkall">
+            <div class="checkbg">
+              <div class="check"></div>
+            </div>
+          </div>
+          <button class="sign none" disabled>批签</button>
+          <div class="file_btnhint">
+            <span class="btn1">签署或查看这个选中的文件</span>
+            <span class="btn2">下载该文档</span>
+            <span class="btn3">验证签署好的文件的信息</span>
+          </div>
+        </div>
+      </div>
+      <!--列表-->
+      <div class="filebox">
+        <div class="file_blank">
+          <div><img src="images/blank.png"><span class="title">没有可以显示的文档</span></div>
+          <div class="text">
+            <br>
+            • <span class="brief"></span><br>
+          </div>
+        </div>
+      </div>
+    </td>
+  </tr>
+  </tbody>
+</table>
+<div class="popupbox keypw">
+  <div class="popup_bg"></div>
+  <div class="popup_br">
+    <i class="icon_60 close"></i>
+    <div class="popup">
+      <div class="title">输入钥匙PIN码</div>
+      <div style=" margin-top: 20px; text-align: center;">
+        <input class="pin" type="password" id="password"><br>
+        <span class="hint">请输入插入的电子钥匙密码</span>
+      </div>
+      <div style=" margin-top: 30px; text-align: center;"><button class="sure">确认</button></div>
+    </div>
+  </div>
+</div>
+<div class="popupbox osign">
+  <div class="popup_bg"></div>
+  <div class="popup_br">
+    <div class="popup">
+      <div class="title">签署文件</div>
+      <div class="hint mod2">
+        <i class="icon_60"></i><br>
+        <span></span>
+      </div>
+      <div style=" margin-top: 30px; text-align: center;">
+        <button class="sure">完成</button>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="popupbox sign">
+  <div class="popup_bg"></div>
+  <div class="popup_br">
+    <div class="popup">
+      <div class="title">签署文件</div>
+      <dl class="signbox" style=" margin-top: 20px; text-align: center;"></dl>
+      <div style=" margin-top: 30px; text-align: right;">
+        <button class="sure" >停止</button>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="popupbox varifie">
+  <div class="popup_bg"></div>
+  <div class="popup_br">
+    <i class="icon_60 close"></i>
+    <div class="popup">
+      <div class="title">验证信息</div>
+      <dl class="listbox">
+      </dl>
+      <dl class="varbox">
+        <dd>
+          <span class="type">验证签章有效！</span><br>
+        </dd>
+        <dd>
+          <span class="type">文件名：</span><br>
+          <span class="text"></span>
+        </dd>
+        <dd>
+          <span class="type">签章时间：</span><br>
+          <span class="text"></span>
+        </dd>
+        <dd>
+          <span class="type">证书名称：</span><br>
+          <span class="text"></span>
+        </dd>
+        <dd>
+          <span class="type">签署服务器：</span><br>
+          <span class="text"></span>
+        </dd>
+        <dd>
+          <span class="type">证书来源：</span><br>
+          <span class="text"></span>
+        </dd>
+      </dl>
+    </div>
+  </div>
+</div>
+</body>
+</html>
