@@ -636,12 +636,38 @@
     /* background: wheat */
     /* } */
     
+    #menpai2 .rot {
+        width: 80px;
+        height: 80px;
+        background: url(../images/rote.png);
+        background-size: cover;
+        position: absolute;
+        left: 50%;
+        margin-left: 140px;
+        top: 55%;
+        z-index: 998;
+        cursor: pointer;
+    }
+    
+    #menpai2 .play_v {
+        width: 26px;
+        height: 42px;
+        background: url(../images/play1.png) no-repeat;
+        background-size: cover;
+        position: absolute;
+        left: 52%;
+        margin-left: 140px;
+        top: 56.5%;
+        z-index: 998;
+        cursor: pointer;
+    }
+    
     #menpai2 .menpai_pro {
         width: 2000px;
         height: 950px;
         position: absolute;
         top: 170px;
-        left: -230px;
+        left: -240px;
         display: none;
     }
     
