@@ -45,3 +45,19 @@ var timer = setInterval(function() {
     $('.vid_two_tits div').eq(currents).addClass('act')
 
 }, 5300);
+// =====================14大门派=========================
+var curren = 0
+var timer = setInterval(function() {
+
+    curren++
+    curren %= 14
+    $('.menpai_pro').removeClass('act_menpai')
+    $('.menpai_pro').eq(curren).addClass('act_menpai')
+    $('.menpai_con .tit div').removeClass()
+    $('.menpai_con .tit div').eq(curren).addClass('act')
+    $('.menpai_pro').eq(curren).fadeOut('fast')
+    $('.menpai_pro').eq(curren).fadeIn('slow')
+
+
+
+}, 5500);
