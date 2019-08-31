@@ -109,14 +109,19 @@ $('.menpai_con .tit div').click(function(e) {
     // ==============旋转===============
 
 
-var rotation2 = function() {
-    $('#menpai2 .rot').rotate({
-        angle: 0,
-        animateTo: 360,
-        callback: rotation2,
-        easing: function(x, t, b, c, d) {
-            return c * (t / d) + b;
-        }
-    });
-}
-rotation2();
+// var rotation2 = function() {
+//     $('#menpai2 .rot').rotate({
+//         angle: 0,
+//         animateTo: 360,
+//         callback: rotation2,
+//         easing: function(x, t, b, c, d) {
+//             return c * (t / d) + b;
+//         }
+//     });
+// }
+// rotation2();
+var angle = 0;
+setInterval(function() {
+    angle += 3;
+    $('#menpai2 .rot').rotate(angle);
+}, 50);

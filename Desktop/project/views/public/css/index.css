@@ -637,14 +637,14 @@
     /* } */
     
     #menpai2 .rot {
-        width: 80px;
-        height: 80px;
-        background: url(../images/rote.png);
-        background-size: cover;
+        width: 60px;
+        height: 60px;
+        background: url(../images/rote.png), url(../images/mc.png);
+        background-size: cover, cover;
         position: absolute;
-        left: 50%;
+        left: 50.7%;
         margin-left: 140px;
-        top: 55%;
+        top: 55.8%;
         z-index: 998;
         cursor: pointer;
     }
@@ -799,11 +799,35 @@
         margin-left: -501px;
     }
     
+    #jianghu .jtx {
+        width: 60px;
+        height: 39px;
+        background: url(../images/jt.png) no-repeat;
+        background-size: cover;
+        position: absolute;
+        top: 45%;
+        left: 50%;
+        margin-left: -30px;
+        animation: fup 1s infinite alternate linear both;
+    }
+    
+    @keyframes fup {
+        0% {
+            transform: translateY(-4px);
+        }
+        50% {
+            transform: translateY(0);
+        }
+        100% {
+            transform: translateY(4px);
+        }
+    }
+    
     #jianghu .btns {
         width: 615px;
         height: 60px;
         position: absolute;
-        top: 45%;
+        top: 50%;
         left: 50%;
         margin-left: -308px;
     }
@@ -842,7 +866,7 @@
         background: url(../images/ewm.png) no-repeat;
         background-size: 100% 100%;
         position: absolute;
-        top: 55%;
+        top: 60%;
         left: 50%;
         margin-left: -594px;
     }
