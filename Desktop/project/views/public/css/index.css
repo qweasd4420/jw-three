@@ -15,6 +15,68 @@
         height: 100%
         /* overflow: hidden; */
     }
+    /* cebian */
+    
+    .cebian {
+        width: 106px;
+        min-height: 5000px;
+        /* background: yellow; */
+        position: absolute;
+        top: 230px;
+        left: 2.5%;
+        /* position: sticky;
+        top: 100px; */
+        z-index: 999;
+        /* opacity: 0.8; */
+    }
+    
+    .cebian .cb {
+        width: 106px;
+        height: 260px;
+    }
+    
+    .cebian .cb1 {
+        position: absolute;
+        top: 0;
+        left: -41px;
+    }
+    
+    .cebian .cb2 {
+        position: absolute;
+        top: 17.5%;
+        left: -41px;
+    }
+    
+    .cebian .cb3 {
+        position: absolute;
+        top: 35%;
+        left: -41px;
+    }
+    
+    .cebian .cb4 {
+        position: absolute;
+        top: 52.5%;
+        left: -41px;
+    }
+    
+    .cebian .cb5 {
+        position: absolute;
+        top: 70%;
+        left: -41px;
+    }
+    
+    .cebian .cb6 {
+        position: absolute;
+        top: 87.5%;
+        left: -41px;
+    }
+    
+    #cebiana .cebian .act {
+        background: url(../images/cb.png) no-repeat;
+        transition: 0.8s;
+        transform: translateX(41px);
+        background-size: 100% 100%;
+    }
     /* head */
     
     #head {
@@ -92,7 +154,7 @@
         height: 910px;
         background: url(../images/banner.jpg) no-repeat center center;
         background-size: 2250px 100%;
-        z-index: 999;
+        z-index: 998;
         position: relative;
     }
     
@@ -992,4 +1054,20 @@
     
     #footer .footer_con .footerBottom .last p a {
         color: #cc0e2b
+    }
+    
+    .videol {
+        width: 856px;
+        height: 480px;
+        position: fixed;
+        left: 50%;
+        top: 50%;
+        margin-top: -280px;
+        margin-left: -428px;
+        z-index: 10000;
+        display: none;
+    }
+    
+    .videol video {
+        z-index: 10000;
     }

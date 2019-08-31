@@ -86,7 +86,7 @@ var timer1 = setInterval(function() {
     $('.menpai_pro').eq(index).fadeOut('fast')
     $('.menpai_pro').eq(curren).fadeOut('fast')
 
-    $('.menpai_pro').eq(curren).fadeIn('slow')
+    $('.menpai_pro').eq(curren).fadeIn('fast')
 }, 5500);
 
 
@@ -125,3 +125,57 @@ setInterval(function() {
     angle += 3;
     $('#menpai2 .rot').rotate(angle);
 }, 50);
+// cebian
+ 
+$(window).scroll(function() {
+    var s = $(window).scrollTop()
+    console.log(s)
+    console.log($(window).height())
+    if (s >= 0) {
+        $('.cb').removeClass('act')
+        console.log('haha')
+        $('.cb1').addClass('act')
+    }
+    if (s >= 912) {
+        $('.cb').removeClass('act')
+        console.log('haha')
+        $('.cb2').addClass('act')
+    }
+    if (s >= 1824) {
+        $('.cb').removeClass('act')
+        console.log('haha')
+        $('.cb3').addClass('act')
+    }
+    if (s >= 2274) {
+        $('.cb').removeClass('act')
+        console.log('haha')
+        $('.cb4').addClass('act')
+    }
+    if (s >= 3479) {
+        $('.cb').removeClass('act')
+        console.log('haha')
+        $('.cb5').addClass('act')
+    }
+    if (s >= 4477) {
+        $('.cb').removeClass('act')
+        console.log('haha')
+        $('.cb6').addClass('act')
+    }
+})
+var err = ['https://static.jx3.xoyo.com/HD_mingjiao.mp4', 'https://static.jx3.xoyo.com/HD_gaibang.mp4', 'https://static.jx3.xoyo.com/HD_tiance.mp4', 'https://static.jx3.xoyo.com/HD_badao.mp4', 'https://static.jx3.xoyo.com/HD_chunyang.mp4', 'https://static.jx3.xoyo.com/HD_qixiu.mp4', 'https://static.jx3.xoyo.com/gfsj/20181201/pl856.mp4', 'https://static.jx3.xoyo.com/HD_tangmen.mp4', 'https://static.jx3.xoyo.com/HD_cangjian.mp4', 'https://static.jx3.xoyo.com/HD_wanhua.mp4', 'https://static.jx3.xoyo.com/HD_changge.mp4', 'https://static.jx3.xoyo.com/video/20181226/HD_cangyun.mp4', 'https://static.jx3.xoyo.com/HD_shaolin.mp4', 'https://static.jx3.xoyo.com/HD_wudu.mp4']
+$('.play_v').click(() => {
+    $(".videol video").empty('source')
+    $('body').css({ 'width': '100%', 'height': '100%', 'overflow': 'hidden', 'background': 'rgb(0,0,0)', 'opacity': '0.7' })
+    var src = err[curren]
+    sourceDom = $("<source src=\"" + src + "\">");
+    $(".videol video").append(sourceDom)
+    $(".videol video")[0].load()
+    $('.videol').css('display', 'block')
+    $('.videol video').focus()
+    $('.videol video').blur(function() {
+        $('body').css({ 'width': '100%', 'height': '100%', 'overflow': 'visible', 'background': 'white', 'opacity': '1' })
+        $('.videol').css('display', 'none')
+
+        $('.videol video').trigger('pause')
+    })
+})
