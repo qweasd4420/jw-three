@@ -23,7 +23,7 @@
     </div>
     <!-- videoll -->
     <div class="videol">
-        <video style="object-fit: fill;width:100%;height: 100%;" autoplay controls>
+        <video style="object-fit: fill;width:856px;height: 480px;" autoplay controls>
             <source src="https://static.jx3.xoyo.com/HD_mingjiao.mp4">
     </video>
     </div>
@@ -42,24 +42,28 @@
 
             </div>
             <div class="headRight">
+                <div class="loginC">
+                    <span></span>
+                    <span>退出</span>
+                </div>
                 <ul>
                     <li>
                         <a href="">登录</a>
                     </li>
                     <li>
-                        <a href="">注册</a>
+                        <a href="#">注册</a>
                     </li>
                     <li>
-                        <a href="">充值</a>
+                        <a href="#">充值</a>
                     </li>
                     <li>
-                        <a href="">老玩家回归指南</a>
+                        <a href="#">老玩家回归指南</a>
                     </li>
                     <li>
-                        <a href="">客服</a>
+                        <a href="#">客服</a>
                     </li>
                     <li>
-                        <a href="">增值服务</a>
+                        <a href="#">增值服务</a>
                     </li>
                 </ul>
             </div>
@@ -70,7 +74,7 @@
     <div id="banner">
         <div class="banner_con">
             <div class="year">
-                <a href=""></a>
+                <a href="#"></a>
             </div>
             <div class="step">
                 <div class="stepLeft stepPro">
@@ -279,8 +283,53 @@
             </div>
         </div>
     </div>
+    <!-- login -->
+    <div class="login">
+        <div class="tit">金山通行证
+            <div class="btn"></div>
+        </div>
+        <form>
+
+            <div class="username">
+                <label for="username">通行证:</label> <input type="text" name="username" minlength="1" maxlength="15"><i>马上注册</i>
+            </div>
+            <div class="password">
+                <label for="password">密码:</label> <input type="password" name="password" minlength="1" maxlength="15"><i>忘记密码?</i>
+            </div>
+            <button class="btn">立即登陆</button>
+        </form>
+    </div>
+    <!-- register -->
+    <div class="register">
+        <div class="tit">金山通行证
+            <div class="btn"></div>
+        </div>
+        <form>
+            <div class="username input">
+                <label for="username"><strong>*</strong>通行证:</label> <input type="text" name="username" minlength="1" maxlength="15">
+            </div>
+            <div class="password input">
+                <label for="password"><strong>*</strong>密码:</label> <input type="password" name="password" minlength="1" maxlength="15">
+            </div>
+            <div class="password input">
+                <label for="repasswd"><strong>*</strong>确认密码:</label> <input type="password" name="repasswd" minlength="1" maxlength="15">
+            </div>
+            <p>根据国家规定请填写真实身份信息，官方会严格保护您的隐私：</p>
+            <div class="realname input">
+                <label for="realname"><strong>*</strong>真实姓名:</label> <input type="text" name="realname" minlength="1" maxlength="15">
+            </div>
+            <div class="usernumber input">
+                <label for="usernumber"><strong>*</strong>身份证:</label> <input type="text" name="usernumber" minlength="1" maxlength="15">
+            </div>
+            <div class="check">
+                <input type="checkbox" name="check"><label for="check">我已阅读并同意</label>
+            </div>
+            <div class="xy"><span>金山网络服务使用协议</span><span>金山通行证隐私权政策</span></div>
+            <button class="btn">确认提交</button>
+        </form>
+    </div>
     <script src="public/js/jquery-3.4.1.min.js"></script>
-    <script t src="public/js/jquery.rotate.min.js"></script>
+    <script src="public/js/jquery.rotate.min.js"></script>
     <script src="public/js/index.js"></script>
 </body>
 
