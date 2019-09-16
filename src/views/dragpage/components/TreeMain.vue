@@ -2,39 +2,39 @@
   <div>
     <!--右侧内容-->
     <!--<router-view/>-->
-    <component :is="tabView" :view-id="pageId"></component>
+    <component :is="tabView" :node-info="nodeInfo"></component>
   </div>
 </template>
 <script>
-import tab from './Table'
-import fo from '../../../components/Container'
+import page from './PageForm'
+import folder from './FolderForm'
 export default {
   name: 'TreeMain',
-  props: ['viewName', 'viewId'],
+  props: ['viewName', 'viewInfo'],
   data() {
     return {
       data: [],
       tabView: '',
-      pageId: ''
+      nodeInfo: ''
     }
   },
   mounted() {
     this.tabView = this.viewName
-    this.pageId = this.viewId
+    this.nodeInfo = this.viewInfo
+    console.log(this.nodeInfo)
   },
   watch: {
     'viewName': function(newVal) {
       this.tabView = this.viewName
     },
-    'viewId': function(newVal) {
-      this.pageId = this.viewId
-      // alert('pageId:' + this.pageId)
-      // alert(this.pageId)
+    'viewInfo': function(newVal) {
+      this.nodeInfo = this.viewInfo
+      console.log(this.nodeInfo)
     }
   },
   components: {
-    tab,
-    fo
+    page,
+    folder
   }
 }
 </script>

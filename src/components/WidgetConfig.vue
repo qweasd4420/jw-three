@@ -48,7 +48,7 @@
         宽度：<el-input style="width: 90px;" type="number" v-model.number="data.options.size.width"></el-input>
         高度：<el-input style="width: 90px;" type="number" v-model.number="data.options.size.height"></el-input>
       </el-form-item>
-      
+
       <el-form-item label="占位内容" v-if="Object.keys(data.options).indexOf('placeholder')>=0 && (data.type!='time' || data.type!='date')">
         <el-input v-model="data.options.placeholder"></el-input>
       </el-form-item>
@@ -115,13 +115,15 @@
         <template v-else>
           <template v-if="data.type=='radio' || (data.type=='select'&&!data.options.multiple)">
             <el-radio-group v-model="data.options.defaultValue">
-              <draggable tag="ul" :list="data.options.options" 
+              <draggable
+                tag="ul"
+                :list="data.options.options"
                 v-bind="{group:{ name:'options'}, ghostClass: 'ghost',handle: '.drag-item'}"
                 handle=".drag-item"
               >
                 <li v-for="(item, index) in data.options.options" :key="index" >
                   <el-radio
-                    :label="item.value" 
+                    :label="item.value"
                     style="margin-right: 5px;"
                   >
                     <el-input :style="{'width': data.options.showLabel? '90px': '180px' }" size="mini" v-model="item.value"></el-input>
@@ -130,17 +132,19 @@
                   </el-radio>
                   <i class="drag-item" style="font-size: 16px;margin: 0 5px;cursor: move;"><i class="iconfont icon-icon_bars"></i></i>
                   <el-button @click="handleOptionsRemove(index)" circle plain type="danger" size="mini" icon="el-icon-minus" style="padding: 4px;margin-left: 5px;"></el-button>
-                  
+
                 </li>
               </draggable>
-              
+
             </el-radio-group>
           </template>
 
           <template v-if="data.type=='checkbox' || (data.type=='select' && data.options.multiple)">
             <el-checkbox-group v-model="data.options.defaultValue">
 
-              <draggable tag="ul" :list="data.options.options" 
+              <draggable
+                tag="ul"
+                :list="data.options.options"
                 v-bind="{group:{ name:'options'}, ghostClass: 'ghost',handle: '.drag-item'}"
                 handle=".drag-item"
               >
@@ -154,7 +158,7 @@
                   </el-checkbox>
                   <i class="drag-item" style="font-size: 16px;margin: 0 5px;cursor: move;"><i class="iconfont icon-icon_bars"></i></i>
                   <el-button @click="handleOptionsRemove(index)" circle plain type="danger" size="mini" icon="el-icon-minus" style="padding: 4px;margin-left: 5px;"></el-button>
-                  
+
                 </li>
               </draggable>
             </el-checkbox-group>
@@ -163,19 +167,28 @@
             <el-button type="text" @click="handleAddOption">添加选项</el-button>
           </div>
         </template>
-        
+
       </el-form-item>
 
       <!-- 添加表格 -->
       <el-form-item label="表格字段" v-if="data.type=='table' && Object.keys(data.options).indexOf('options')>=0">
-        <template v-if="data.type=='table'&&!data.options.multiple">
-          <draggable tag="ul" :list="data.options.options"
-                     v-bind="{group:{ name:'options'}, ghostClass: 'ghost',handle: '.drag-item'}"
-                     handle=".drag-item"
+        <template v-if="!data.options.multiple">
+          <draggable
+            tag="ul"
+            :list="data.options.options"
+            v-bind="{group:{ name:'options'}, ghostClass: 'ghost',handle: '.drag-item'}"
+            handle=".drag-item"
           >
             <li v-for="(item, index) in data.options.options" :key="index" >
-              <span class="demonstration">列&nbsp;名</span>&nbsp;<el-input :style="{'width': '160px' }" size="mini" v-model="item.label" clearable />
-              <br><span class="demonstration">字&nbsp;段</span>&nbsp;<el-input :style="{'width': '160px' }" size="mini" v-model="item.value" clearable />
+              <span class="demonstration">列&nbsp;名</span>&nbsp;
+              <el-input :style="{'width': '160px' }" size="mini" v-model="item.label" clearable />
+              <br><span class="demonstration">字&nbsp;段</span>&nbsp;
+              <el-input :style="{'width': '160px' }" size="mini" v-model="item.value" clearable />
+              <br><span class="demonstration">类&nbsp;型</span>&nbsp;
+              <el-select :style="{'width': '160px' }" v-model="item.type" placeholder="请选择">
+                <el-option value="input">普通文本</el-option>
+                <el-option value="date">日期类型</el-option>
+              </el-select>
               <i class="drag-item" style="font-size: 16px;margin: 0 5px;cursor: move;"><i class="iconfont icon-icon_bars"></i></i>
               <el-button @click="handleOptionsRemove(index)" circle plain type="danger" size="mini" icon="el-icon-minus" style="padding: 4px;margin-left: 5px;"></el-button>
             </li>
@@ -210,7 +223,7 @@
         <el-input v-if="data.type=='button'" v-model="data.options.defaultValue"></el-input>
         <el-rate v-if="data.type == 'rate'" style="display:inline-block;vertical-align: middle;" :max="data.options.max" :allow-half="data.options.allowHalf" v-model="data.options.defaultValue"></el-rate>
         <el-button type="text" v-if="data.type == 'rate'" style="display:inline-block;vertical-align: middle;margin-left: 10px;" @click="data.options.defaultValue=0">清空</el-button>
-        <el-color-picker 
+        <el-color-picker
           v-if="data.type == 'color'"
           v-model="data.options.defaultValue"
           :show-alpha="data.options.showAlpha"
@@ -225,35 +238,37 @@
       </el-form-item>
       <!-- 按钮添加远程属性 -->
       <template v-if="Object.keys(data.options).indexOf('methodRjs')>=0&&data.options.methodBody.remote">
-          <el-form-item size="mini" label="远端方法" :rules="{required: true, message: '方法名不能为空', trigger: 'blur'}">
+          <!-- <el-form-item size="mini" label="远端方法" :rules="{required: true, message: '方法名不能为空', trigger: 'blur'}">
             <el-input size="mini" v-model="data.options.methodRjs">
             </el-input>
-          </el-form-item>
+          </el-form-item> -->
         <el-form-item size="mini" label="请求地址" :rules="{required: true, message: '请求地址不能为空', trigger: 'blur'}">
           <el-input size="mini" v-model="data.options.methodBody.methodUrl">
           </el-input>
         </el-form-item>
-          <el-form-item label="请求方式" :rules="{required: true, message: '请求方式不能为空', trigger: 'blur'}">
-            <el-radio-group v-model="data.options.methodBody.httpSendMethod">
-              <el-radio label="post"></el-radio>
-              <el-radio label="get"></el-radio>
-            </el-radio-group>
-          </el-form-item>
-          <el-form-item label="请求格式" :rules="{required: true, message: '请求格式不能为空', trigger: 'blur'}">
-            <el-radio-group v-model="data.options.methodBody.contentType">
-              <el-radio label="application/json"></el-radio>
-              <el-radio label="application/x-www-form-urlencoded"></el-radio>
-            </el-radio-group>
-          </el-form-item>
-          <el-form-item label="操作" :rules="{required: true, message: '操作不能为空', trigger: 'blur'}">
-            <el-radio-group v-model="data.options.methodBody.operateBtn">
-              <el-radio label="query"></el-radio>
-              <el-radio label="add"></el-radio>
-              <el-radio label="delete"></el-radio>
-              <el-radio label="update"></el-radio>
-            </el-radio-group>
-          </el-form-item>
-        <template v-if="data.options.methodBody.operateBtn=='query'">
+        <el-form-item label="请求方式" :rules="{required: true, message: '请求方式不能为空', trigger: 'blur'}">
+          <el-radio-group v-model="data.options.methodBody.httpSendMethod">
+            <el-radio label="post"></el-radio>
+            <el-radio label="get"></el-radio>
+          </el-radio-group>
+        </el-form-item>
+        <el-form-item label="请求格式" :rules="{required: true, message: '请求格式不能为空', trigger: 'blur'}">
+          <el-radio-group v-model="data.options.methodBody.contentType">
+            <el-radio label="application/json"></el-radio>
+            <el-radio label="application/x-www-form-urlencoded"></el-radio>
+          </el-radio-group>
+        </el-form-item>
+        <el-form-item label="操作" :rules="{required: true, message: '操作不能为空', trigger: 'blur'}">
+          <el-radio-group v-model="data.options.methodBody.operateBtn">
+            <el-radio label="query"></el-radio>
+            <el-radio label="add"></el-radio>
+            <el-radio label="delete"></el-radio>
+            <el-radio label="update"></el-radio>
+          </el-radio-group>
+        </el-form-item>
+        <template
+          v-if="data.options.methodBody.operateBtn=='query' || data.options.methodBody.operateBtn=='delete'
+          || data.options.methodBody.operateBtn=='add'">
           <el-form-item size="mini" label="绑定表格" :rules="{required: true, message: '表格名不能为空', trigger: 'blur'}">
             <el-input size="mini" v-model="data.options.methodBody.tableList">
             </el-input>
@@ -298,7 +313,7 @@
           <el-input v-model="data.options.format"></el-input>
         </el-form-item>
         <el-form-item label="默认值" v-if="data.type=='time' && Object.keys(data.options).indexOf('isRange')>=0">
-          <el-time-picker 
+          <el-time-picker
             key="1"
             style="width: 100%;"
             v-if="!data.options.isRange"
@@ -307,7 +322,7 @@
             :value-format="data.options.format"
           >
           </el-time-picker>
-          <el-time-picker 
+          <el-time-picker
             key="2"
             v-if="data.options.isRange"
             style="width: 100%;"
@@ -321,7 +336,7 @@
       </template>
 
       <template v-if="data.type=='imgupload'">
-        
+
         <el-form-item label="最大上传数">
           <el-input type="number" v-model.number="data.options.length"></el-input>
         </el-form-item>
@@ -358,16 +373,18 @@
           <el-input type="number" v-model.number="data.options.gutter"></el-input>
         </el-form-item>
         <el-form-item label="列配置项">
-          <draggable tag="ul" :list="data.columns" 
+          <draggable
+            tag="ul"
+            :list="data.columns"
             v-bind="{group:{ name:'options'}, ghostClass: 'ghost',handle: '.drag-item'}"
             handle=".drag-item"
           >
             <li v-for="(item, index) in data.columns" :key="index" >
               <i class="drag-item" style="font-size: 16px;margin: 0 5px;cursor: move;"><i class="iconfont icon-icon_bars"></i></i>
               <el-input placeholder="栅格值" size="mini" style="width: 100px;" type="number" v-model.number="item.span"></el-input>
-              
+
               <el-button @click="handleOptionsRemove(index)" circle plain type="danger" size="mini" icon="el-icon-minus" style="padding: 4px;margin-left: 5px;"></el-button>
-              
+
             </li>
           </draggable>
           <div style="margin-left: 22px;">
@@ -391,10 +408,9 @@
           </el-select>
         </el-form-item>
       </template>
-      
 
       <template v-if="data.type != 'grid' && data.type != 'table'">
-        
+
         <el-form-item label="数据绑定Key">
           <el-input v-model="data.model"></el-input>
         </el-form-item>
@@ -450,7 +466,7 @@ export default {
     Draggable
   },
   props: ['data'],
-  data () {
+  data() {
     return {
       validator: {
         type: null,
@@ -462,7 +478,7 @@ export default {
     }
   },
   computed: {
-    show () {
+    show() {
       if (this.data && Object.keys(this.data).length > 0) {
         return true
       }
@@ -470,41 +486,40 @@ export default {
     }
   },
   methods: {
-    handleOptionsRemove (index) {
+    handleOptionsRemove(index) {
       if (this.data.type === 'grid') {
         this.data.columns.splice(index, 1)
-      } else if(this.data.type === 'table'){
+      } else if (this.data.type === 'table') {
         this.data.options.options.splice(index, 1)
       } else {
         this.data.options.options.splice(index, 1)
       }
-      
     },
-    handleAddOption () {
+    handleAddOption() {
       if (this.data.options.showLabel) {
         this.data.options.options.push({
           value: '新选项',
           label: '新选项'
         })
-      } else if(this.data.type === 'table'){
+      } else if (this.data.type === 'table') {
         this.data.options.options.push({
           label: '列名',
-          value: 'column'
+          value: 'column',
+          type: 'input'
         })
       } else {
         this.data.options.options.push({
           value: '新选项'
         })
       }
-      
     },
-    handleAddColumn () {
+    handleAddColumn() {
       this.data.columns.push({
         span: '',
         list: []
       })
     },
-    generateRule () {
+    generateRule() {
       this.data.rules = []
       Object.keys(this.validator).forEach(key => {
         if (this.validator[key]) {
@@ -512,27 +527,25 @@ export default {
         }
       })
     },
-    handleSelectMuliple (value) {
+    handleSelectMuliple(value) {
       if (value) {
         if (this.data.options.defaultValue) {
           this.data.options.defaultValue = [this.data.options.defaultValue]
         } else {
           this.data.options.defaultValue = []
         }
-        
       } else {
-        if (this.data.options.defaultValue.length>0){
+        if (this.data.options.defaultValue.length > 0) {
           this.data.options.defaultValue = this.data.options.defaultValue[0]
         } else {
           this.data.options.defaultValue = ''
         }
-        
       }
     },
 
-    validateRequired (val) {
+    validateRequired(val) {
       if (val) {
-        this.validator.required = {required: true, message: `${this.data.name}必须填写`}
+        this.validator.required = { required: true, message: `${this.data.name}必须填写` }
       } else {
         this.validator.required = null
       }
@@ -542,26 +555,26 @@ export default {
       })
     },
 
-    validateDataType (val) {
+    validateDataType(val) {
       if (!this.show) {
         return false
       }
-      
+
       if (val) {
-        this.validator.type = {type: val, message: this.data.name + '格式不正确'}
+        this.validator.type = { type: val, message: this.data.name + '格式不正确' }
       } else {
         this.validator.type = null
       }
 
       this.generateRule()
     },
-    valiatePattern (val) {
+    valiatePattern(val) {
       if (!this.show) {
         return false
       }
 
       if (val) {
-        this.validator.pattern = {pattern: val, message: this.data.name + '格式不匹配'}
+        this.validator.pattern = { pattern: val, message: this.data.name + '格式不匹配' }
       } else {
         this.validator.pattern = null
       }
@@ -575,21 +588,22 @@ export default {
         if (val) {
           this.data.options.defaultValue = null
         } else {
-          if (Object.keys(this.data.options).indexOf('defaultValue')>=0) 
+          if (Object.keys(this.data.options).indexOf('defaultValue') >= 0) {
             this.data.options.defaultValue = ''
+          }
         }
       }
     },
     'data.options.required': function(val) {
       this.validateRequired(val)
     },
-    'data.options.dataType': function (val) {
+    'data.options.dataType': function(val) {
       this.validateDataType(val)
     },
-    'data.options.pattern': function (val) {
+    'data.options.pattern': function(val) {
       this.valiatePattern(val)
     },
-    'data.name': function (val) {
+    'data.name': function(val) {
       if (this.data.options) {
         this.validateRequired(this.data.options.required)
         this.validateDataType(this.data.options.dataType)

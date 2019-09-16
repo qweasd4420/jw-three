@@ -10,7 +10,7 @@ export const basicComponents = [
       dataType: 'string',
       pattern: '',
       placeholder: '',
-      disabled: false,
+      disabled: false
     }
   },
   {
@@ -23,14 +23,19 @@ export const basicComponents = [
       disabled: false,
       icon: 'el-icon-edit',
       defaultValue: '确定',
-      methodRjs: '',           // 按钮绑定事件
+      methodRjs: 'methodRjs', // 按钮绑定事件
       methodBody: {
-        remote: false,         // 是否绑定事件
-        operateBtn: 'query',      // add增加，delete删除，update更新，query查询
+        remote: false, // 是否绑定事件
+        operateBtn: 'query', // add增加，delete删除，update更新，query查询
         httpSendMethod: 'post',
         contentType: 'application/json',
         methodUrl: '',
         tableList: ''
+      },
+      pagination: {
+        currentPage: 1, // 当前页
+        pageSize: 5, // 每页展示条数
+        total: 0 // 总数
       }
     }
   },
@@ -124,7 +129,7 @@ export const basicComponents = [
         label: 'label'
       },
       remoteFunc: '',
-      disabled: false,
+      disabled: false
     }
   },
   {
@@ -144,7 +149,7 @@ export const basicComponents = [
       arrowControl: true,
       format: 'HH:mm:ss',
       required: false,
-      width: '',
+      width: ''
     }
   },
   {
@@ -164,7 +169,7 @@ export const basicComponents = [
       format: 'yyyy-MM-dd',
       timestamp: false,
       required: false,
-      width: '',
+      width: ''
     }
   },
   {
@@ -209,7 +214,8 @@ export const basicComponents = [
         },
         {
           value: '下拉框2'
-        },{
+        },
+        {
           value: '下拉框3'
         }
       ],
@@ -230,7 +236,7 @@ export const basicComponents = [
     options: {
       defaultValue: false,
       required: false,
-      disabled: false,
+      disabled: false
     }
   },
   {
@@ -265,26 +271,33 @@ export const advanceComponents = [
     name: '表格',
     icon: 'icon-input',
     options: {
-      defaultValue: [],
+      defaultValue: [
+      ],
+      addNumber: 0,
+      showDelete: false, // 是否显示删除按钮
       multiple: false,
       showTable: false,
       options: [
         {
           value: '选项1',
-          label: '选项1'
+          label: '选项1',
+          type: 'input'
         },
         {
           value: '选项2',
-          label: '选项2'
+          label: '选项2',
+          type: 'date'
         },
         {
           value: '选项3',
-          label: '选项3'
+          label: '选项3',
+          type: 'input'
         }
       ],
-      props: {
-        label: 'label',
-        value: 'value'
+      pagination: {
+        currentPage: 1, // 当前页
+        pageSize: 5, // 每页展示条数
+        total: 0 // 总数
       }
     }
   },
@@ -296,7 +309,7 @@ export const advanceComponents = [
       defaultValue: [],
       size: {
         width: 100,
-        height: 100,
+        height: 100
       },
       width: '',
       tokenFunc: 'funcGetToken',

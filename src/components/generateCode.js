@@ -1,19 +1,19 @@
-function findRemoteFunc (list, funcList, tokenFuncList, blankList, methodList) {
+function findRemoteFunc(list, funcList, tokenFuncList, blankList, methodList) {
   // alert(JSON.stringify(list))
   for (let i = 0; i < list.length; i++) {
-    if (list[i].type == 'grid') {
+    if (list[i].type === 'grid') {
       list[i].columns.forEach(item => {
         findRemoteFunc(item.list, funcList, tokenFuncList, blankList, methodList)
       })
     } else {
-      if (list[i].type == 'blank') {
+      if (list[i].type === 'blank') {
         if (list[i].model) {
           blankList.push({
             name: list[i].model,
             label: list[i].name
           })
         }
-      } else if (list[i].type == 'imgupload') {
+      } else if (list[i].type === 'imgupload') {
         if (list[i].options.tokenFunc) {
           tokenFuncList.push({
             func: list[i].options.tokenFunc,
@@ -21,10 +21,11 @@ function findRemoteFunc (list, funcList, tokenFuncList, blankList, methodList) {
             model: list[i].model
           })
         }
-      } else if (list[i].type == 'button'){
-        if(list[i].options.methodBody.remote && list[i].options.methodRjs != ''){
+      } else if (list[i].type === 'button') {
+        // && list[i].options.methodRjs != ''
+        if (list[i].options.methodBody.remote) {
           methodList.push({
-            func: list[i].options.methodRjs,
+            // func: list[i].options.methodRjs,
             methodUrl: list[i].options.methodBody.methodUrl,
             httpSendMethod: list[i].options.methodBody.httpSendMethod,
             contentType: list[i].options.methodBody.contentType,
@@ -45,8 +46,7 @@ function findRemoteFunc (list, funcList, tokenFuncList, blankList, methodList) {
   }
 }
 
-export default function (data) {
-
+export default function(data) {
   const funcList = []
 
   const tokenFuncList = []
@@ -55,7 +55,7 @@ export default function (data) {
   // 按钮绑定事件生成
   const methodList = []
 
-  findRemoteFunc(JSON.parse(data).list, funcList, tokenFuncList, blankList ,methodList)
+  findRemoteFunc(JSON.parse(data).list, funcList, tokenFuncList, blankList, methodList)
 
   let funcTemplate = ''
 
@@ -64,7 +64,7 @@ export default function (data) {
 
   let blankTemplate = ''
 
-  for(let i = 0; i < funcList.length; i++) {
+  for (let i = 0; i < funcList.length; i++) {
     funcTemplate += `
             ${funcList[i].func} (resolve) {
               // ${funcList[i].label} ${funcList[i].model}
@@ -75,7 +75,7 @@ export default function (data) {
     `
   }
 
-  for(let i = 0; i < tokenFuncList.length; i++) {
+  for (let i = 0; i < tokenFuncList.length; i++) {
     funcTemplate += `
             ${tokenFuncList[i].func} (resolve) {
               // ${tokenFuncList[i].label} ${tokenFuncList[i].model}
@@ -97,7 +97,7 @@ export default function (data) {
 
   for (let i = 0; i < methodList.length; i++) {
     // 查询
-    if(methodList[i].operateBtn == "query"){
+    if (methodList[i].operateBtn === 'query') {
       methodTemplate += `
           ${methodList[i].func} () {
             let data = this.$refs.generateForm.getData();
@@ -120,12 +120,13 @@ export default function (data) {
             })
           },
     `
-    } else if(methodList[i] == "add"){  // 增加
-
-    } else if(methodList[i] == "update"){ // 更新
-
-    } else if(methodList[i] == "delete"){ // 删除
-
+      console.log(methodTemplate)
+    } else if (methodList[i] === 'add') {
+      // 增加
+    } else if (methodList[i] === 'update') {
+      // 更新
+    } else if (methodList[i] === 'delete') {
+      // 删除
     }
   }
   methodTemplate += `
@@ -161,12 +162,12 @@ export default function (data) {
   </head>
   <body>
     <div id="app">
-      <fm-generate-form :data="jsonData" :remote="remoteFuncs" :value="editData" ref="generateForm" @childClick="myChild">
+      <fm-generate-form :data="jsonData" :remote="remoteFuncs" :value="editData" ref="generateForm" @parentTableData="tableData" @childClick="myChild">
         ${blankTemplate}
       </fm-generate-form>
     </div>
     <script src="./js/vue.js"></script>
-    <script src="./js/indexdrag.js"></script>
+    <script src="./js/index.js"></script>
     <script src="./js/FormMaking.umd.js"></script>
     <script src="pdfjs/js/jquery1.11.js" ></script>
     <script>
@@ -206,11 +207,18 @@ export default function (data) {
           this.$EventBus.$on("childClick",(val)=>{
             console.log("执行父组件")
             console.log(val)
+          }),
+          this.$EventBus.$on("parentTableData",(val)=>{
+            console.log("获取选中的值")
+            console.log(val)
           })
         },
         methods: {
           myChild(val){
             alert("在generateCode")
+          },
+          tableData(val){
+            alert("执行tableData")
           }
         }
       })

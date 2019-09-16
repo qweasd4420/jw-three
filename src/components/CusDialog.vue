@@ -14,7 +14,11 @@
       <slot></slot>
     </span>
 
-    <span v-if="action" slot="footer" class="dialog-footer" v-loading="loading"
+    <span
+      v-if="action"
+      slot="footer"
+      class="dialog-footer"
+      v-loading="loading"
       :element-loading-text="loadingText">
       <slot name="action">
         <el-button @click="close">取消</el-button>

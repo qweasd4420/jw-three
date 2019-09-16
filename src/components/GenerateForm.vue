@@ -1,9 +1,13 @@
 <template>
   <div>
-    <el-form ref="generateForm"
+    <el-form
+      ref="generateForm"
       label-suffix=":"
       :size="data.config.size"
-      :model="models" :rules="rules" :label-position="data.config.labelPosition" :label-width="data.config.labelWidth + 'px'">
+      :model="models"
+      :rules="rules"
+      :label-position="data.config.labelPosition"
+      :label-width="data.config.labelWidth + 'px'">
       <template v-for="item in data.list">
 
         <template v-if="item.type == 'grid'">
@@ -21,7 +25,7 @@
                 <el-form-item v-if="citem.type=='blank'" :label="citem.name" :prop="citem.model" :key="citem.key">
                   <slot :name="citem.model" :model="models"></slot>
                 </el-form-item>
-                <genetate-form-item v-else :key="citem.key" :models.sync="models" :remote="remote" @grandChild="myGrandChild" :rules="rules" :widget="citem"></genetate-form-item>
+                <genetate-form-item v-else :key="citem.key" :models.sync="models" :remote="remote" @tableList="getTableData" @grandChild="myGrandChild" @sizeChangeQuery="sizeChangeParent" @currentChangeQuery="currentChangeParent" :rules="rules" :widget="citem"></genetate-form-item>
               </template>
             </el-col>
           </el-row>
@@ -34,7 +38,7 @@
         </template>
 
         <template v-else>
-          <genetate-form-item :key="item.key" :models.sync="models" :rules="rules" @grandChild="myGrandChild" :widget="item" :remote="remote" ></genetate-form-item>
+          <genetate-form-item :key="item.key" :models.sync="models" :rules="rules" @tableList="getTableData" @grandChild="myGrandChild" @sizeChangeQuery="sizeChangeParent" @currentChangeQuery="currentChangeParent" :widget="item" :remote="remote" ></genetate-form-item>
         </template>
 
       </template>
@@ -44,7 +48,6 @@
 
 <script>
 import GenetateFormItem from './GenerateFormItem'
-import {loadJs} from '../utils/indexdrag.js'
 
 export default {
   name: 'fm-generate-form',
@@ -52,20 +55,20 @@ export default {
     GenetateFormItem
   },
   props: ['data', 'remote', 'value', 'insite'],
-  data () {
+  data() {
     return {
       models: {},
       rules: {}
     }
   },
-  created () {
+  created() {
     this.generateModle(this.data.list)
   },
-  mounted () {
+  mounted() {
   },
   methods: {
 
-    generateModle (genList) {
+    generateModle(genList) {
       for (let i = 0; i < genList.length; i++) {
         if (genList[i].type === 'grid') {
           genList[i].columns.forEach(item => {
@@ -83,28 +86,26 @@ export default {
           }
 
           if (this.rules[genList[i].model]) {
-
             this.rules[genList[i].model] = [...this.rules[genList[i].model], ...genList[i].rules.map(item => {
               if (item.pattern) {
-                return {...item, pattern: eval(item.pattern)}
+                return { ...item, pattern: eval(item.pattern) }
               } else {
-                return {...item}
+                return { ...item }
               }
             })]
           } else {
-
             this.rules[genList[i].model] = [...genList[i].rules.map(item => {
               if (item.pattern) {
-                return {...item, pattern: eval(item.pattern)}
+                return { ...item, pattern: eval(item.pattern) }
               } else {
-                return {...item}
+                return { ...item }
               }
             })]
           }
         }
       }
     },
-    getData () {
+    getData() {
       return new Promise((resolve, reject) => {
         this.$refs.generateForm.validate(valid => {
           if (valid) {
@@ -115,31 +116,41 @@ export default {
         })
       })
     },
-    reset () {
+    reset() {
       this.$refs.generateForm.resetFields()
     },
-    refresh () {
+    refresh() {
 
     },
-    myGrandChild(val){
+    myGrandChild(val) {
       // let child = {grandChildName:val,child:"我是子组件"}
-
-      alert('进入myGrandChild')
-      this.$EventBus.$emit("childClick",val)
+      // alert('进入myGrandChild')
+      // alert("子组件" + JSON.stringify(val))
+      this.$EventBus.$emit('childClick', val)
+    },
+    getTableData(val) {
+      // alert('进入parentTableData' + JSON.stringify(val))
+      this.$EventBus.$emit('parentTableData', val)
+    },
+    sizeChangeParent(val) {
+      this.$EventBus.$emit('sizeChangeData', val)
+    },
+    currentChangeParent(val) {
+      this.$EventBus.$emit('currentChangeData', val)
     }
   },
   watch: {
     data: {
       deep: true,
-      handler (val) {
+      handler(val) {
         this.generateModle(val.list)
       }
     },
     value: {
       deep: true,
-      handler (val) {
+      handler(val) {
         console.log(JSON.stringify(val))
-        this.models = {...this.models, ...val}
+        this.models = { ...this.models, ...val }
       }
     }
   }

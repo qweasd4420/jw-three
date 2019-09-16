@@ -12,16 +12,22 @@ export default class DragPageApi {
    */
   static initPage(pageId) {
     return request({
-      url: '/drag-page/dragPage/queryPageParam',
+      url: '/px-common-dragpage/dragPage/queryPageParam',
       method: 'post',
       data: pageId
     })
   }
   static savePageParam(pageParam) {
     return request({
-      url: '/drag-page/dragPage/savePageParam',
+      url: '/px-common-dragpage/dragPage/savePageParam',
       method: 'post',
       data: pageParam
+    })
+  }
+  static initTree() {
+    return request({
+      url: '/px-common-dragpage/treeManage/treeInit',
+      method: 'post'
     })
   }
 }

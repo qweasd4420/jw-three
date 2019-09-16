@@ -1,23 +1,23 @@
-<template xmlns:v-slot="http://www.w3.org/1999/XSL/Transform">
+<template>
   <el-container class="fm2-container">
     <el-main class="fm2-main">
       <el-container>
-        <el-aside width="22%">
+        <el-aside width="250px">
           <div class="components-list">
             <div class="widget-cate">基础字段</div>
             <draggable
               tag="ul"
               :list="basicComponents"
               v-bind="{group:{ name:'people', pull:'clone',put:false},sort:false, ghostClass: 'ghost'}"
-              :move="handleMove"
               @end="handleMoveEnd"
               @start="handleMoveStart"
+              :move="handleMove"
             >
 
-              <li v-for="(item, index) in basicComponents" :key="index" class="form-edit-widget-label">
+              <li class="form-edit-widget-label" v-for="(item, index) in basicComponents" :key="index">
                 <a>
                   <i class="icon iconfont" :class="item.icon"></i>
-                  <span>{{ item.name }}</span>
+                  <span>{{item.name}}</span>
                 </a>
               </li>
             </draggable>
@@ -27,15 +27,15 @@
               tag="ul"
               :list="advanceComponents"
               v-bind="{group:{ name:'people', pull:'clone',put:false},sort:false, ghostClass: 'ghost'}"
-              :move="handleMove"
               @end="handleMoveEnd"
               @start="handleMoveStart"
+              :move="handleMove"
             >
 
               <li class="form-edit-widget-label" v-for="(item, index) in advanceComponents" :key="index">
                 <a>
                   <i class="icon iconfont" :class="item.icon"></i>
-                  <span>{{ item.name }}</span>
+                  <span>{{item.name}}</span>
                 </a>
               </li>
             </draggable>
@@ -45,12 +45,12 @@
               tag="ul"
               :list="layoutComponents"
               v-bind="{group:{ name:'people', pull:'clone',put:false},sort:false, ghostClass: 'ghost'}"
-              :move="handleMove"
               @end="handleMoveEnd"
               @start="handleMoveStart"
+              :move="handleMove"
             >
 
-              <li v-for="(item, index) in layoutComponents" :key="index" class="form-edit-widget-label data-grid">
+              <li class="form-edit-widget-label data-grid" v-for="(item, index) in layoutComponents" :key="index">
                 <a>
                   <i class="icon iconfont" :class="item.icon"></i>
                   <span>{{item.name}}</span>
@@ -64,11 +64,9 @@
           <el-header class="btn-bar" style="height: 45px;">
             <slot name="action">
             </slot>
-            <!--<el-button v-if="upload" type="text" size="medium" icon="el-icon-upload2" @click="handleUpload">导入JSON</el-button>-->
             <el-button v-if="clearable" type="text" size="medium" icon="el-icon-delete" @click="handleClear">清空</el-button>
             <el-button v-if="preview" type="text" size="medium" icon="el-icon-view" @click="handlePreview">预览</el-button>
-            <el-button v-if="generateJson" type="text" size="medium" icon="el-icon-tickets" @click="handleGenerateJson">保存页面</el-button>
-            <!--<el-button v-if="generateCode" type="text" size="medium" icon="el-icon-document" @click="handleGenerateCode">生成代码</el-button>-->
+            <el-button v-if="generateJson" type="text" size="medium" icon="el-icon-tickets" @click="handleGenerateJson">保存</el-button>
           </el-header>
           <el-main :class="{'widget-empty': widgetForm.list.length == 0}">
 
@@ -76,7 +74,6 @@
           </el-main>
         </el-container>
 
-        <!-- <el-aside class="widget-config-container"> -->
         <el-aside class="widget-config-container">
           <el-container>
             <el-header height="45px">
@@ -90,7 +87,23 @@
           </el-container>
 
         </el-aside>
-
+        <!-- 添加 -->
+        <el-dialog
+          title="保存"
+          :visible.sync="saveVisible"
+          width="25%"
+        >
+          <el-form :model="saveForm" :rules="saveRules" ref="saveForm" label-width="100px" class="demo-ruleForm">
+            <el-form-item label="页面名称" prop="pageName">
+              <el-input type="primary" v-model="saveForm.pageName" auto-complete="off" :clearable="true"></el-input>
+            </el-form-item>
+            <el-form-item>
+              <el-button type="primary" @click="savePage()">提交</el-button>
+              <el-button @click="resetForm('saveForm')">重置</el-button>
+            </el-form-item>
+          </el-form>
+        </el-dialog>
+        <!-- 添加 -->
         <cus-dialog
           :visible="previewVisible"
           @on-close="previewVisible = false"
@@ -99,9 +112,10 @@
           form
         >
           <generate-form insite="true" v-if="previewVisible" :data="widgetForm" :value="widgetModels" :remote="remoteFuncs" ref="generateForm">
+
             <template v-slot:blank="scope">
-              宽度：<el-input v-model="scope.model.blank.width" style="width: 100px" />
-              高度：<el-input v-model="scope.model.blank.height" style="width: 100px" />
+              宽度：<el-input v-model="scope.model.blank.width" style="width: 100px"></el-input>
+              高度：<el-input v-model="scope.model.blank.height" style="width: 100px"></el-input>
             </template>
           </generate-form>
 
@@ -122,23 +136,7 @@
           <el-alert type="info" title="JSON格式如下，直接复制生成的json覆盖此处代码点击确定即可"></el-alert>
           <div id="uploadeditor" style="height: 400px;width: 100%;">{{jsonEg}}</div>
         </cus-dialog>
-        <!-- 添加 -->
-        <el-dialog
-          title="保存"
-          :visible.sync="saveVisible"
-          width="25%"
-        >
-          <el-form :model="saveForm" :rules="saveRules" ref="saveForm" label-width="100px" class="demo-ruleForm">
-            <el-form-item label="页面名称" prop="pageName">
-              <el-input type="primary" v-model="saveForm.pageName" auto-complete="off" :clearable="true"></el-input>
-            </el-form-item>
-            <el-form-item>
-              <el-button type="primary" @click="savePage()">提交</el-button>
-              <el-button @click="resetForm('saveForm')">重置</el-button>
-            </el-form-item>
-          </el-form>
-        </el-dialog>
-        <!-- 添加 -->
+
         <cus-dialog
           :visible="jsonVisible"
           @on-close="jsonVisible = false"
@@ -166,7 +164,6 @@
         </cus-dialog>
       </el-container>
     </el-main>
-    <el-footer height="30px" style="font-weight: 600;">Powered by <a target="_blank" href="https://github.com/GavinZhuLei/vue-form-making">GavinZhuLei</a></el-footer>
   </el-container>
 
 </template>
@@ -178,14 +175,13 @@ import FormConfig from './FormConfig'
 import WidgetForm from './WidgetForm'
 import CusDialog from './CusDialog'
 import GenerateForm from './GenerateForm'
-// import Clipboard from 'clipboard'
 import { basicComponents, layoutComponents, advanceComponents } from './componentsConfig.js'
-// import {loadJs, loadCss} from '../utils/indexdrag.js'
 import request from '../utils/request.js'
 import generateCode from './generateCode.js'
 import DragPageApi from '../api/DragPageApi'
 
 export default {
+
   name: 'fm-making-form',
   components: {
     Draggable,
@@ -301,6 +297,15 @@ export default {
             message: '用户名只能为中文'
           }
         ]
+      },
+      jsonData: {
+        'list': [
+        ],
+        'config': {
+          'labelWidth': 100,
+          'labelPosition': 'right',
+          'size': 'small'
+        }
       }
     }
   },
@@ -316,7 +321,11 @@ export default {
       // alert('initializationPage的值为' + this.pageId)
       DragPageApi.initPage({ pageId: this.pageId }).then(res => {
         try {
-          this.setJSON(JSON.parse(res.data))
+          if (res.data !== undefined && res.data !== null) {
+            this.setJSON(JSON.parse(res.data))
+          } else {
+            this.setJSON(this.jsonData)
+          }
         } catch (e) {
           this.$message.error(e.message)
           this.$refs.uploadJson.end()
