@@ -5,14 +5,6 @@ Vue.use(Router)
 
 /* Layout */
 import Layout from '@/layout'
-import practiceRouter from './modules/practice'
-import courseRouter from './modules/courseRouter'
-import studentRouter from './modules/studentRouter'
-import signatureRouter from './modules/signatureRouter'
-import processRouter from './modules/processManage'
-import testRouter from './modules/testRouter'
-import surveyRouter from './modules/surveyRouter'
-import groupRouter from './modules/grouptxl'
 import dragPageRouter from './modules/dragpage'
 
 /* Router Modules */
@@ -110,18 +102,10 @@ export const constantRoutes = [
 export const asyncRoutes = [
 
   /** when your routing map is too long, you can split it into small modules **/
-  practiceRouter,
   // componentsRouter,
   // chartsRouter,
   // nestedRouter,
   // tableRouter,
-  courseRouter,
-  studentRouter,
-  signatureRouter,
-  processRouter,
-  testRouter,
-  surveyRouter,
-  groupRouter,
   dragPageRouter,
   {
     path: '/theme',

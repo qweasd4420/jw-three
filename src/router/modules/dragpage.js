@@ -17,12 +17,6 @@ const dragPageRouter = {
       component: () => import('@/views/dragpage/DragPage'),
       name: 'dragPage',
       meta: { title: '树形管理界面' }
-    },
-    {
-      path: 'container',
-      component: () => import('@/components/Container'),
-      name: 'container',
-      meta: { title: '容器' }
     }
   ]
 }
