@@ -331,7 +331,7 @@ export default class SignApi {
    */
   static getPdfStdDigests(param) {
     return request({
-      url: '/px-sign/signSealManage/getPdfStdDigests',
+      url: '/px-common-sign/signSealManage/getPdfStdDigests',
       method: 'post',
       data: param
     })
@@ -343,7 +343,7 @@ export default class SignApi {
    */
   static getPdfStdDigestOnKws(param) {
     return request({
-      url: '/px-sign/signSealManage/getPdfStdDigestOnKws',
+      url: '/px-common-sign/signSealManage/getPdfStdDigestOnKws',
       method: 'post',
       data: param
     })
@@ -355,7 +355,7 @@ export default class SignApi {
    */
   static sealStdPdfReturnByte(param) {
     return request({
-      url: '/px-sign/signSealManage/sealStdPdfReturnByte',
+      url: '/px-common-sign/signSealManage/sealStdPdfReturnByte',
       method: 'post',
       data: param
     })

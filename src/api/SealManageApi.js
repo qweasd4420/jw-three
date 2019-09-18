@@ -12,7 +12,7 @@ export default class SealManageApi {
    */
   static querySeals(queryParam) {
     return request({
-      url: '/px-sign/signSealManage/querySeals',
+      url: '/px-common-sign/signSealManage/querySeals',
       method: 'post',
       data: queryParam
     })
@@ -24,7 +24,7 @@ export default class SealManageApi {
    */
   static queryScene() {
     return request({
-      url: '/px-sign/searchScene/queryScene',
+      url: '/px-common-sign/searchScene/queryScene',
       method: 'post'
     })
   }
@@ -35,7 +35,7 @@ export default class SealManageApi {
    */
   static changeStatus(updateParam) {
     return request({
-      url: '/px-sign/signSealManage/updateStatus',
+      url: '/px-common-sign/signSealManage/updateStatus',
       method: 'post',
       data: updateParam
     })
@@ -43,7 +43,7 @@ export default class SealManageApi {
   // 测试打开
   static sealStart() {
     return request({
-      url: '/px-sign/pdfView',
+      url: '/px-common-sign/pdfView',
       method: 'post'
     })
   }
