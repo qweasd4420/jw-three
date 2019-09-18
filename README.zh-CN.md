@@ -155,10 +155,10 @@ Become a sponsor and get your logo on our README on GitHub with a link to your s
 
 ```bash
 # 克隆项目
-git clone git@192.168.30.67:px/tg/tm2/projects/pxf/pxf-basesystem-dragpage.git
+git clone git@192.168.30.67:px/tg/tm2/projects/pxf/pxf-common-dragpage.git
 
 # 进入项目目录
-cd pxf-basesystem-dragpage
+cd pxf-common-dragpage
 
 # 安装依赖
 npm install
@@ -170,7 +170,7 @@ npm install --registry=https://registry.npm.taobao.org
 npm run dev
 ```
 
-浏览器访问 http://localhost:9528
+浏览器访问 http://localhost:9529
 
 ## 发布
 

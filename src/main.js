@@ -16,16 +16,9 @@ import router from './router'
 import './icons' // icon
 import './permission' // permission control
 import './utils/error-log' // error log
-import './assets/iconfont/iconfont.css'
 
 import * as filters from './filters' // global filters
 
-import FormMaking from './index'
-
-Vue.use(FormMaking)
-
-Vue.prototype.$EventBus = new Vue()
-Vue.config.productionTip = false
 /**
  * If you don't want to use mock-server
  * you want to use mockjs for request interception
@@ -51,4 +44,4 @@ new Vue({
   router,
   store,
   render: h => h(App)
-}).$mount('#app')
+})

@@ -1,7 +1,6 @@
 'use strict'
 const path = require('path')
 const defaultSettings = require('./src/settings.js')
-const TerserPlugin = require('terser-webpack-plugin')
 
 function resolve(dir) {
   return path.join(__dirname, dir)
@@ -11,7 +10,7 @@ const name = defaultSettings.title || 'vue Element Admin' // page title
 // If your port is set to 80,
 // use administrator privileges to execute the command line.
 // For example, Mac: sudo npm run
-const port = 9528 // dev port
+const port = 9529 // dev port
 
 // All configuration item explanations can be find in https://cli.vuejs.org/config/
 module.exports = {
@@ -47,7 +46,7 @@ module.exports = {
     },
     after: require('./mock/mock-server.js')
   },
-  /* configureWebpack: {
+  configureWebpack: {
     // provide the app's title in webpack's name field, so that
     // it can be accessed in index.html to inject the correct title.
     name: name,
@@ -55,24 +54,6 @@ module.exports = {
       alias: {
         '@': resolve('src')
       }
-    }
-  } */
-  configureWebpack: config => {
-    const plugins = [
-      new TerserPlugin({
-        terserOptions: {
-          compress: {
-            warnings: false,
-            drop_debugger: false,
-            drop_console: true
-          }
-        },
-        sourceMap: false,
-        parallel: true
-      })
-    ]
-    if (process.env.NODE_ENV !== 'development') {
-      config.plugins = [...config.plugins, ...plugins]
     }
   },
   chainWebpack(config) {

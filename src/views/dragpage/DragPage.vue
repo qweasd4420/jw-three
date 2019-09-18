@@ -1,8 +1,8 @@
 <template @click="hideMenu">
   <el-container>
     <el-aside
-        v-if="isCollapse"
-        style="background-color: rgb(238, 241, 246);padding:2px 6px">
+      v-if="isCollapse"
+      style="background-color: rgb(238, 241, 246);padding:2px 6px">
       <!--左侧内容-->
       <el-input
         style="padding: 18px 0 18px 0;background: #ffffff;"

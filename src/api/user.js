@@ -17,10 +17,9 @@ export function getInfo(token) {
   })
 }
 
-export function logout(token) {
+export function logout() {
   return request({
     url: UserMockApi.getUserMockApi() + '/user/logout',
-    method: 'post',
-    params: { token }
+    method: 'post'
   })
 }

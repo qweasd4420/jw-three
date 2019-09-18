@@ -5,7 +5,9 @@ Vue.use(Router)
 
 /* Layout */
 import Layout from '@/layout'
-import dragPageRouter from './modules/dragpage'
+import signatureRouter from './modules/signatureRouter'
+import groupRouter from './modules/grouptxl'
+import dragpageRouter from './modules/dragpageRouter'
 
 /* Router Modules */
 /**
@@ -106,7 +108,9 @@ export const asyncRoutes = [
   // chartsRouter,
   // nestedRouter,
   // tableRouter,
-  dragPageRouter,
+  signatureRouter,
+  groupRouter,
+  dragpageRouter,
   {
     path: '/theme',
     component: Layout,
