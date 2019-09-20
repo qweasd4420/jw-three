@@ -207,7 +207,7 @@ export default {
       const id = row.fileId
       // 打开iframe页面
       this.dialogSingleShow = true
-      this.iframePdf = this.baseURL + 'px-common-signature/pdfView?' + 'id=' + id
+      this.iframePdf = this.baseURL + '/px-common-signature/pdfView?' + 'id=' + id
       let _scrollWidth = document.body.scrollWidth
       const _scrollHeight = document.body.scrollHeight
       if (_scrollWidth < 985) {
@@ -235,7 +235,7 @@ export default {
       }
       // 打开iframe页面
       this.dialogSingleShow = true
-      this.iframePdf = this.baseURL + 'px-common-signature/pdfView?' + 'id=' + id + '&type=pSign'
+      this.iframePdf = this.baseURL + '/px-common-signature/pdfView?' + 'id=' + id + '&type=pSign'
       alert(this.iframePdf)
       let _scrollWidth = document.body.scrollWidth
       const _scrollHeight = document.body.scrollHeight
