@@ -19,6 +19,8 @@ import './utils/error-log' // error log
 
 import * as filters from './filters' // global filters
 
+Vue.prototype.$EventBus = new Vue()
+Vue.config.productionTip = false
 /**
  * If you don't want to use mock-server
  * you want to use mockjs for request interception

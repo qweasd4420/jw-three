@@ -35,6 +35,13 @@ export default {
   components: {
     page,
     folder
+  },
+  methods: {
+    initTree() {
+      console.log('进入')
+      // 怎么通知父模块，为什么不能直接调用父模块方法
+      this.$EventBus.$emit('childClick')
+    }
   }
 }
 </script>

@@ -55,11 +55,56 @@ export default class DragPageApi {
     })
   }
 
+  /**
+   * 查询所有版本号
+   * @param queryParam
+   * @returns {AxiosPromise}
+   */
   static queryVersions(queryParam) {
     return request({
       url: '/px-common-dragpage/versionManage/queryVersions',
       method: 'post',
       data: queryParam
+    })
+  }
+
+  /**
+   * 更新最新版本号
+   * @param updateParam
+   * @returns {AxiosPromise}
+   */
+  static updateVersion(updateParam) {
+    return request({
+      url: '/px-common-dragpage/versionManage/updateVersion',
+      method: 'post',
+      data: updateParam
+    })
+  }
+
+  /**
+   * 删除页面版本
+   * @param deleteParam
+   *                    pageId
+   * @returns {AxiosPromise}
+   */
+  static deleteVersion(deleteParam) {
+    return request({
+      url: '/px-common-dragpage/versionManage/deleteVersion',
+      method: 'post',
+      data: deleteParam
+    })
+  }
+
+  /**
+   * 修改当前版本页面的信息
+   * @param updateParam
+   * @returns {AxiosPromise}
+   */
+  static updatePageInfo(updateParam) {
+    return request({
+      url: '/px-common-dragpage/versionManage/updatePageInfo',
+      method: 'post',
+      data: updateParam
     })
   }
 }
