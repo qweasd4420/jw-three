@@ -5,6 +5,14 @@
         <el-button type="primary" size="small" @click="searchPdf">搜索</el-button>
         <el-button type="primary" size="small" @click="patchSignPosition">按位置批签</el-button>
         <el-button type="primary" size="small" @click="patchSignKeyWord">按关键字批签</el-button>
+        <el-date-picker
+          v-model="value1"
+          type="datetime"
+          format="yyyy-MM-dd HH:mm"
+          placeholder="选择日期时间"
+          @blur="getFocus"
+          @focus="lostFocus">
+        </el-date-picker>
       </div>
     </el-header>
     <el-main>
@@ -132,6 +140,7 @@ export default {
   name: 'Approval',
   data() {
     return {
+      value1: '',
       dialogPositionVisible: false,
       dialogSingleShow: false,
       dialogKeywordVisible: false,
@@ -314,6 +323,12 @@ export default {
     },
     resetForm(formName) {
       this.$refs[formName].resetFields()
+    },
+    getFocus() {
+      console.log('触发getFocus')
+    },
+    lostFocus() {
+      console.log('触发lostFocus')
     }
   }
 }
