@@ -236,7 +236,7 @@ export default {
       // 打开iframe页面
       this.dialogSingleShow = true
       this.iframePdf = this.baseURL + '/px-common-signature/pdfView?' + 'id=' + id + '&type=pSign'
-      alert(this.iframePdf)
+      // alert(this.iframePdf)
       let _scrollWidth = document.body.scrollWidth
       const _scrollHeight = document.body.scrollHeight
       if (_scrollWidth < 985) {

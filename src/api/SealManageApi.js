@@ -54,7 +54,7 @@ export default class SealManageApi {
    */
   static getPdfList(queryParam) {
     return request({
-      url: '/admin/getPdfList',
+      url: '/px-common-signature/getPdfList',
       method: 'post',
       data: queryParam
     })
