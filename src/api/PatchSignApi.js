@@ -4,7 +4,7 @@ import { Message } from 'element-ui'
 /**
  * 批量签章js集合
  */
-export default class SignApi {
+export default class PatchSignApi {
   /**
    * 批签
    * @param patchParam
@@ -30,8 +30,8 @@ export default class SignApi {
 
     // TODO 批签返回结果
     const patchSignRes = new Map()
-    const success = new Array()
-    const error = new Array()
+    const success = new Array([])
+    const error = new Array([])
 
     let Dn // 证书
     let filesHash // 所有文件的hash值
@@ -71,12 +71,12 @@ export default class SignApi {
             },
             fail(message) {
               // 此处失败为整体失败
-              SignApi.failMessage(message)
+              PatchSignApi.failMessage(message)
               return
             },
             error(message) {
               // 此处失败为整体失败
-              SignApi.errorMessage(message)
+              PatchSignApi.errorMessage(message)
               return
             }
           })
@@ -113,19 +113,18 @@ export default class SignApi {
                     },
                     pageNo: pageNum
                   }
-                  const cName = null
                   // 此处异常处理需要，无论如何都会返回值，是否应该添加一个成功状态
                   const p1 = new Promise((resolve) => {
-                    SignApi.getPdfStdDigests(param).then(res => {
+                    PatchSignApi.getPdfStdDigests(param).then(res => {
                       if (res.status === 0) {
                         filesHash = res.data
                       } else {
                         // 全部失败，给出提示
-                        SignApi.failMessage('获取摘要信息，接口调用失败')
+                        PatchSignApi.failMessage('获取摘要信息，接口调用失败')
                         return
                       }
                       const p = new Promise((resolve) => {
-                        SignApi.patchSign(patchSignRes, error, success, filesHash, pin, Dn).then(res => {
+                        PatchSignApi.patchSign(patchSignRes, error, success, filesHash, pin, Dn).then(res => {
                           // 返回参数
                           resolve(res)
                         })
@@ -138,7 +137,7 @@ export default class SignApi {
                   // 根据偏移方位修正xPos和yPos的值
                   let x
                   let y
-                  if (isDeviation != undefined && isDeviation != null) {
+                  if (isDeviation !== undefined && isDeviation != null) {
                     switch (isDeviation) {
                       case '0': // 不偏移
                         x = 0
@@ -183,16 +182,16 @@ export default class SignApi {
                   }
                   // 按关键字获取PDF摘要
                   const p1 = new Promise((resolve) => {
-                    SignApi.getPdfStdDigestOnKws(param).then(res => {
+                    PatchSignApi.getPdfStdDigestOnKws(param).then(res => {
                       if (res.status === 0) {
                         filesHash = res.data
                       } else {
                         // 全部失败，给出提示
-                        SignApi.failMessage('获取摘要信息，接口调用失败')
+                        PatchSignApi.failMessage('获取摘要信息，接口调用失败')
                         return
                       }
                       const p = new Promise((resolve) => {
-                        SignApi.patchSign(patchSignRes, error, success, filesHash, pin, Dn).then(res => {
+                        PatchSignApi.patchSign(patchSignRes, error, success, filesHash, pin, Dn).then(res => {
                           resolve(res)
                         })
                       })
@@ -204,12 +203,12 @@ export default class SignApi {
               },
               fail(message) {
                 // 此处失败为整体失败
-                SignApi.failMessage(message)
+                PatchSignApi.failMessage(message)
                 return
               },
               error(message) {
                 // 此处失败为整体失败，整体失败的需要return
-                SignApi.errorMessage(message)
+                PatchSignApi.errorMessage(message)
                 return
               }
             })
@@ -218,12 +217,12 @@ export default class SignApi {
         },
         fail(message) {
           // 此处失败为整体失败
-          SignApi.failMessage(message)
+          PatchSignApi.failMessage(message)
           return
         },
         error(message) {
           // 此处失败为整体失败
-          SignApi.errorMessage(message)
+          PatchSignApi.errorMessage(message)
           return
         }
       })
@@ -253,10 +252,10 @@ export default class SignApi {
           signInfo: data
         }
         // 签章
-        SignApi.sealStdPdfReturnByte(param).then(res => {
+        PatchSignApi.sealStdPdfReturnByte(param).then(res => {
           if (res.status === 0) {
             // 此接口调用成功，不代表签章成功，需要再判断内层status
-            if (res.data.status == 0) {
+            if (res.data.status === 0) {
               // TODO 记录成功的文件信息
               const param = {
                 fileId: fileId,
@@ -283,7 +282,7 @@ export default class SignApi {
               message: '生成签章数据接口调用失败'
             }
             error.push(param)
-            SignApi.failMessage('生成签章数据接口调用失败')
+            PatchSignApi.failMessage('生成签章数据接口调用失败')
           }
         }).catch(res => {
           console.log('阻止事件冒泡' + res)
@@ -308,7 +307,7 @@ export default class SignApi {
           message: message
         }
         error.push(param)
-        SignApi.failMessage(message)
+        PatchSignApi.failMessage(message)
       },
       error(message) {
         // 进入该error代表该文件签章失败，自动结束此次循环，并添加信息
@@ -319,11 +318,10 @@ export default class SignApi {
           message: message
         }
         error.push(param)
-        SignApi.errorMessage(message)
+        PatchSignApi.errorMessage(message)
       }
     })
   }
-
   /**
    * 根据位置获取摘要
    * @param param
@@ -360,24 +358,6 @@ export default class SignApi {
       data: param
     })
   }
-  // 失败回调
-  static failMessage(message) {
-    Message({
-      message: '失败，原因：' + message,
-      type: 'error',
-      duration: 2 * 1000,
-      center: true
-    })
-  }
-  static errorMessage(message) {
-    Message({
-      message: '失败，原因：' + message,
-      type: 'error',
-      duration: 2 * 1000,
-      center: true
-    })
-  }
-
   /**
    * 签章最后公用处理方法
    * @param patchSignRes
@@ -412,7 +392,7 @@ export default class SignApi {
       }
       // TODO 最后再装载
       // 处理这个里的异常
-      SignApi.signPdf(fileId, fileName, fileHash, Dn, pin, success, error)
+      PatchSignApi.signPdf(fileId, fileName, fileHash, Dn, pin, success, error)
     }
     // 当计的次数超过的时候执行
     if (time >= filesHash.length) {
@@ -425,5 +405,22 @@ export default class SignApi {
         resolve(patchSignRes)
       })
     }
+  }
+  // 失败回调
+  static failMessage(message) {
+    Message({
+      message: '失败，原因：' + message,
+      type: 'error',
+      duration: 2 * 1000,
+      center: true
+    })
+  }
+  static errorMessage(message) {
+    Message({
+      message: '失败，原因：' + message,
+      type: 'error',
+      duration: 2 * 1000,
+      center: true
+    })
   }
 }

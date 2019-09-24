@@ -65,7 +65,33 @@
       </span>
     </el-dialog>
     <el-dialog
-      title="按位置批签"
+      title="按位置单签"
+      :visible.sync="dialogSinglePos"
+      width="30%"
+      :before-close="handleClose"
+    >
+      <el-form ref="patchPositionParam" :model="singlePositionParam" label-width="80px" label-position="left">
+        <el-form-item label="PIN码" prop="pin">
+          <el-input v-model="singlePositionParam.pin" placeholder="" style="width: 75%" />
+        </el-form-item>
+      </el-form>
+      <span style="color: red;">请输入UKey的PIN码</span>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="singlePosSignSure">确 定</el-button>
+      </span>
+    </el-dialog>
+    <!-- 进度条 -->
+    <el-dialog
+      title=""
+      :visible.sync="progressVisible"
+      width="20%"
+      :before-close="handleClose"
+      align="center"
+    >
+      <el-progress type="circle" :percentage="singlePercentage.percentage" :status="singlePercentage.signStatus"></el-progress>
+    </el-dialog>
+    <el-dialog
+      title="按关键字批签"
       :visible.sync="dialogKeywordVisible"
       width="30%"
       :before-close="handleClose"
@@ -127,7 +153,8 @@
 <script>
 
 import SealManageApi from '../../api/SealManageApi'
-import SignApi from '../../api/SignApi'
+import PatchSignApi from '../../api/PatchSignApi'
+import SingleSignApi from '../../api/SingleSignApi'
 
 const signSingleDefault = {
   fileId: '',
@@ -142,6 +169,12 @@ export default {
     return {
       value1: '',
       dialogPositionVisible: false,
+      dialogSinglePos: false,
+      progressVisible: false, // 进度条
+      singlePercentage: {
+        percentage: 0, // 百分比
+        signStatus: '' // 状态
+      },
       dialogSingleShow: false,
       dialogKeywordVisible: false,
       passForm: false,
@@ -187,6 +220,11 @@ export default {
         keyword: '',
         isDeviation: '',
         signMode: '',
+        signType: '',
+        pin: ''
+      },
+      singlePositionParam: {
+        singlePosition: {},
         signType: '',
         pin: ''
       }
@@ -266,8 +304,17 @@ export default {
       // 根据上面制定的结构来解析iframe内部发回来的数据
       const data = event.data
       switch (data.cmd) {
-        case 'returnSingleSign':
-          console.log('单签结果')
+        case 'singleSignPosition':
+          console.log('单签位置')
+          if (data.params.success === true) {
+            this.singlePositionParam.signType = data.params.data.signType
+            this.singlePositionParam.singlePosition = {
+              xPos: data.params.data.x,
+              yPos: data.params.data.y,
+              pageNum: data.params.data.p
+            }
+            this.dialogSinglePos = true
+          }
           // 业务逻辑
           break
         case 'returnPosition':
@@ -292,7 +339,7 @@ export default {
       }
       console.log('待签章的文件为:' + JSON.stringify(this.patchPositionParam.selectFiles))
       // 开始签章
-      SignApi.patchPositionOrKeyword(this.patchPositionParam).then((e) => {
+      PatchSignApi.patchPositionOrKeyword(this.patchPositionParam).then((e) => {
         console.log(e)
         console.log(e.get('success'))
         console.log(e.get('error'))
@@ -309,9 +356,9 @@ export default {
         this.patchKeywordParam.selectFiles.set(this.selectList[i].fileId, this.selectList[i].fileName)
       }
       console.log(this.patchKeywordParam.selectFiles)
-      // console.log(SignApi.patchPositionOrKeyword(this.patchKeywordParam))
+      // console.log(PatchSignApi.patchPositionOrKeyword(this.patchKeywordParam))
       // 开始签章
-      SignApi.patchPositionOrKeyword(this.patchKeywordParam).then((e) => {
+      PatchSignApi.patchPositionOrKeyword(this.patchKeywordParam).then((e) => {
         console.log(e)
         console.log(e.get('success'))
         console.log(e.get('error'))
@@ -324,11 +371,11 @@ export default {
     resetForm(formName) {
       this.$refs[formName].resetFields()
     },
-    getFocus() {
-      console.log('触发getFocus')
-    },
-    lostFocus() {
-      console.log('触发lostFocus')
+    singlePosSignSure() { // 按位置单签确定按钮
+      // 按位置单签
+      // 先测试进度条
+      this.progressVisible = true
+      SingleSignApi.singleSignPosition(this.singlePositionParam, this.singlePercentage)
     }
   }
 }
