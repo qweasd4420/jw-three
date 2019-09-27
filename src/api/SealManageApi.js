@@ -59,4 +59,17 @@ export default class SealManageApi {
       data: queryParam
     })
   }
+
+  /**
+   * 批量验签
+   * @param param
+   *            fileIds 文件数组
+   */
+  static verifySignFiles(param) {
+    return request({
+      url: '/px-common-signature/verifySignFiles',
+      method: 'post',
+      data: param
+    })
+  }
 }

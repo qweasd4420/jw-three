@@ -379,7 +379,7 @@ export default {
       // 编辑页面
       // 打开model窗口，在model窗口中打开编辑页面
       this.dialogEditPage = true
-      this.editPageUrl = 'http://192.100.3.106:13035/#/'
+      this.editPageUrl = 'http://192.100.2.67:13035/#/'
       let _scrollWidth = document.body.scrollWidth
       const _scrollHeight = document.body.scrollHeight
       const iTop = window.screen.height

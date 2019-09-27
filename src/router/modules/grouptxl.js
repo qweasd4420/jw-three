@@ -1,5 +1,5 @@
 import Layout from '@/layout'
-import grouptxl from '../../views/test/grouptxl'
+import GroupTxl from '../../views/test/grouptxl'
 
 const groupRouter = {
   path: '/grouptxl',
@@ -12,9 +12,9 @@ const groupRouter = {
   },
   children: [
     {
-      path: 'grouptxl',
-      component: grouptxl,
-      name: 'grouptxl',
+      path: 'GroupTxl',
+      component: GroupTxl,
+      name: 'GroupTxl',
       meta: { title: 'SQL编辑' }
     }
   ]

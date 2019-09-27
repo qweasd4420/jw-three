@@ -8,13 +8,22 @@ export default class PatchSignApi {
   /**
    * 批签
    * @param patchParam
+   * @param singlePercentage
    * @param callback
    */
-  static patchPositionOrKeyword(patchParam, callback) {
+  static patchPositionOrKeyword(patchParam, singlePercentage, callback) {
     console.log('获取的值为:' + patchParam)
     console.log('检测钥匙Pin码，事件绑定成功')
+    // 批量下载文件
+    const fileMap = {
+      fileIds: patchParam.selectFileIds
+    }
+    PatchSignApi.downloadFilesByIds(fileMap).then(res => {
+      console.log('文件下载成功')
+    })
     // 初始化参数
-    let signType = patchParam.signType // 0 签名 1 签章
+    const signFlag = patchParam.signType // 0 签名 1 签章
+    let signType // 印章编号前两位
     const pin = patchParam.pin // PIN码
 
     // 需要解析 patchParam.selectFiles
@@ -52,7 +61,7 @@ export default class PatchSignApi {
       signMode = patchParam.signMode // 签署第几个关键字
       isDeviation = patchParam.isDeviation // 偏移方位
     }
-    console.log('进入签章方法' + signType + ':' + xPos + ':' + yPos + ':' + pageNum)
+    console.log('进入签章方法' + signFlag + ':' + xPos + ':' + yPos + ':' + pageNum)
     // 校验钥匙Pin码
     const p3 = new Promise((resolve) => {
       UTCMiddleWare.OpenKey({
@@ -87,9 +96,9 @@ export default class PatchSignApi {
               success(data) {
                 let signInfo = null
                 // 11签章，12签字
-                if (signType === '1') { // 签章
+                if (signFlag === '1') { // 签章
                   signType = '11'
-                } else if (signType === '0') { // 签名
+                } else if (signFlag === '0') { // 签名
                   signType = '12'
                 }
                 for (let i = 0; i < data.length; i++) {
@@ -124,7 +133,8 @@ export default class PatchSignApi {
                         return
                       }
                       const p = new Promise((resolve) => {
-                        PatchSignApi.patchSign(patchSignRes, error, success, filesHash, pin, Dn).then(res => {
+                        singlePercentage.percentage = 66
+                        PatchSignApi.patchSign(patchSignRes, error, success, filesHash, pin, Dn, singlePercentage).then(res => {
                           // 返回参数
                           resolve(res)
                         })
@@ -191,7 +201,8 @@ export default class PatchSignApi {
                         return
                       }
                       const p = new Promise((resolve) => {
-                        PatchSignApi.patchSign(patchSignRes, error, success, filesHash, pin, Dn).then(res => {
+                        singlePercentage.percentage = 66
+                        PatchSignApi.patchSign(patchSignRes, error, success, filesHash, pin, Dn, singlePercentage).then(res => {
                           resolve(res)
                         })
                       })
@@ -204,12 +215,10 @@ export default class PatchSignApi {
               fail(message) {
                 // 此处失败为整体失败
                 PatchSignApi.failMessage(message)
-                return
               },
               error(message) {
                 // 此处失败为整体失败，整体失败的需要return
                 PatchSignApi.errorMessage(message)
-                return
               }
             })
           })
@@ -218,12 +227,10 @@ export default class PatchSignApi {
         fail(message) {
           // 此处失败为整体失败
           PatchSignApi.failMessage(message)
-          return
         },
         error(message) {
           // 此处失败为整体失败
           PatchSignApi.errorMessage(message)
-          return
         }
       })
     })
@@ -260,7 +267,8 @@ export default class PatchSignApi {
               const param = {
                 fileId: fileId,
                 fileName: fileName,
-                message: '文件签章成功'
+                message: '文件签章成功',
+                signFileId: res.data.data
               }
               success.push(param)
             } else {
@@ -295,6 +303,7 @@ export default class PatchSignApi {
           error.push(param)
         }).then((e) => {
           // 阻止事件冒泡
+          console.log(e)
           console.log('阻止promise冒泡')
         })
       },
@@ -329,7 +338,7 @@ export default class PatchSignApi {
    */
   static getPdfStdDigests(param) {
     return request({
-      url: '/px-common-signature/signSealManage/getPdfStdDigests',
+      url: '/px-common-signature/signSealOperator/getPdfStdDigests',
       method: 'post',
       data: param
     })
@@ -341,7 +350,7 @@ export default class PatchSignApi {
    */
   static getPdfStdDigestOnKws(param) {
     return request({
-      url: '/px-common-signature/signSealManage/getPdfStdDigestOnKws',
+      url: '/px-common-signature/signSealOperator/getPdfStdDigestOnKws',
       method: 'post',
       data: param
     })
@@ -353,7 +362,7 @@ export default class PatchSignApi {
    */
   static sealStdPdfReturnByte(param) {
     return request({
-      url: '/px-common-signature/signSealManage/sealStdPdfReturnByte',
+      url: '/px-common-signature/signSealOperator/sealStdPdfReturnByte',
       method: 'post',
       data: param
     })
@@ -366,9 +375,10 @@ export default class PatchSignApi {
    * @param filesHash
    * @param pin
    * @param Dn
+   * @param singlePercentage
    * @returns {Promise<any>}
    */
-  static patchSign(patchSignRes, error, success, filesHash, pin, Dn) {
+  static patchSign(patchSignRes, error, success, filesHash, pin, Dn, singlePercentage) {
     let time = 0
     // 这个地方应该添加一个成功状态
     for (let i = 0; i < filesHash.length; i++) {
@@ -421,6 +431,18 @@ export default class PatchSignApi {
       type: 'error',
       duration: 2 * 1000,
       center: true
+    })
+  }
+
+  /**
+   * 根据文件id批量下载文件
+   * @param selectFileIds 文件id数组
+   */
+  static downloadFilesByIds(selectFileIds) {
+    return request({
+      url: '/px-common-signature/downloadFilesByIds',
+      method: 'post',
+      data: selectFileIds
     })
   }
 }

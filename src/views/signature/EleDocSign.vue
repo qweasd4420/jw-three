@@ -1,20 +1,15 @@
 <template>
   <el-container>
+    <!-- 列表顶部按钮 -->
     <el-header>
       <div>
         <el-button type="primary" size="small" @click="searchPdf">搜索</el-button>
         <el-button type="primary" size="small" @click="patchSignPosition">按位置批签</el-button>
         <el-button type="primary" size="small" @click="patchSignKeyWord">按关键字批签</el-button>
-        <el-date-picker
-          v-model="value1"
-          type="datetime"
-          format="yyyy-MM-dd HH:mm"
-          placeholder="选择日期时间"
-          @blur="getFocus"
-          @focus="lostFocus">
-        </el-date-picker>
+        <el-button type="primary" size="small" @click="verifySignFiles">批量验签</el-button>
       </div>
     </el-header>
+    <!-- 列表数据展示 -->
     <el-main>
       <el-table :data="pdfList" size="small" height="calc(100vh - 198px)" border style="width: 100%; line-height: 20px" @selection-change="changeFun">
         <el-table-column type="selection" width="40" />
@@ -41,7 +36,34 @@
         />
       </div>
     </el-main>
-
+    <!-- iframe -->
+    <el-dialog
+      title="新一代交易平台电子签章"
+      :visible.sync="dialogSingleShow"
+      width="95%"
+      top="5px"
+      :before-close="handleClose"
+    >
+      <iframe ref="child" :src="iframePdf" :width="iframeWidth" :height="iframeHigh" frameborder="0"></iframe>
+    </el-dialog>
+    <!-- 按位置单签 -->
+    <el-dialog
+      title="按位置单签"
+      :visible.sync="dialogSinglePos"
+      width="30%"
+      :before-close="handleClose"
+    >
+      <el-form ref="singlePositionParam" :model="singlePositionParam" label-width="80px" label-position="left">
+        <el-form-item label="PIN码" prop="pin">
+          <el-input v-model="singlePositionParam.pin" placeholder="" style="width: 75%" />
+        </el-form-item>
+      </el-form>
+      <span style="color: red;">请输入UKey的PIN码</span>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="singlePosSignSure">确 定</el-button>
+      </span>
+    </el-dialog>
+    <!-- 按位置批签 -->
     <el-dialog
       title="按位置批签"
       :visible.sync="dialogPositionVisible"
@@ -64,32 +86,55 @@
         <el-button @click="positionSignSure">确 定</el-button>
       </span>
     </el-dialog>
+    <!-- 按关键字单签 -->
     <el-dialog
-      title="按位置单签"
-      :visible.sync="dialogSinglePos"
+      title="按关键字单签"
+      :visible.sync="dialogKeywordSingleVisible"
       width="30%"
       :before-close="handleClose"
     >
-      <el-form ref="patchPositionParam" :model="singlePositionParam" label-width="80px" label-position="left">
+      <el-form ref="singleKeywordParam" :model="singleKeywordParam" label-width="80px" label-position="left">
+        <el-form-item label="关键字" prop="keyword">
+          <el-input v-model="singleKeywordParam.keyword" placeholder="请输入关键字" style="width: 75%" />
+        </el-form-item>
+        <el-form-item label="偏移方位" prop="isDeviation">
+          <el-select v-model="singleKeywordParam.isDeviation" placeholder="请选择相对于关键字偏移方位" style="width: 75%">
+            <el-option label="不偏移" value="0" />
+            <el-option label="向上偏移" value="1" />
+            <el-option label="向下偏移" value="2" />
+            <el-option label="向左偏移" value="3" />
+            <el-option label="向右偏移" value="4" />
+          </el-select>
+        </el-form-item>
+        <el-form-item label="签署类型" prop="signType">
+          <el-select v-model="singleKeywordParam.signType" placeholder="请选择签署类型" style="width: 75%">
+            <el-option label="签名" value="0" />
+            <el-option label="签章" value="1" />
+          </el-select>
+        </el-form-item>
+        <el-form-item label="签署位置" prop="signMode">
+          <el-select v-model="singleKeywordParam.signMode" placeholder="请选择签署第几个关键字" style="width: 75%">
+            <el-option label="签署第一个关键字" value="0" />
+            <el-option label="签署最后一个关键字" value="1" />
+            <el-option label="签署所有关键字" value="2" />
+            <el-option label="签署第二个关键字" value="3" />
+          </el-select>
+        </el-form-item>
         <el-form-item label="PIN码" prop="pin">
-          <el-input v-model="singlePositionParam.pin" placeholder="" style="width: 75%" />
+          <el-input
+            v-model="singleKeywordParam.pin"
+            show-password
+            placeholder="请输入PIN码"
+            style="width: 75%"
+          />
         </el-form-item>
       </el-form>
       <span style="color: red;">请输入UKey的PIN码</span>
       <span slot="footer" class="dialog-footer">
-        <el-button @click="singlePosSignSure">确 定</el-button>
+        <el-button @click="keywordSingleSignSure">确 定</el-button>
       </span>
     </el-dialog>
-    <!-- 进度条 -->
-    <el-dialog
-      title=""
-      :visible.sync="progressVisible"
-      width="20%"
-      :before-close="handleClose"
-      align="center"
-    >
-      <el-progress type="circle" :percentage="singlePercentage.percentage" :status="singlePercentage.signStatus"></el-progress>
-    </el-dialog>
+    <!-- 按关键字批签 -->
     <el-dialog
       title="按关键字批签"
       :visible.sync="dialogKeywordVisible"
@@ -138,14 +183,16 @@
         <el-button @click="keywordSignSure">确 定</el-button>
       </span>
     </el-dialog>
+    <!-- 进度条 -->
     <el-dialog
-      title="新一代交易平台电子签章"
-      :visible.sync="dialogSingleShow"
-      width="95%"
-      top="5px"
+      title=""
+      :visible.sync="progressVisible"
+      width="20%"
       :before-close="handleClose"
+      align="center"
     >
-      <iframe ref="child" :src="iframePdf" :width="iframeWidth" :height="iframeHigh" frameborder="0" />
+      <el-progress v-if="singlePercentage.percentage!==100" type="circle" :percentage="singlePercentage.percentage"></el-progress>
+      <el-progress v-if="singlePercentage.percentage===100" type="circle" :percentage="singlePercentage.percentage" status="success"></el-progress>
     </el-dialog>
   </el-container>
 </template>
@@ -167,7 +214,6 @@ export default {
   name: 'Approval',
   data() {
     return {
-      value1: '',
       dialogPositionVisible: false,
       dialogSinglePos: false,
       progressVisible: false, // 进度条
@@ -177,6 +223,7 @@ export default {
       },
       dialogSingleShow: false,
       dialogKeywordVisible: false,
+      dialogKeywordSingleVisible: false,
       passForm: false,
       iframeWidth: '',
       iframeHigh: '',
@@ -187,7 +234,7 @@ export default {
       currentPage: 1,
       queryParam: {
         data: {
-          fileIds: ['1', '2', '3']
+          fileIds: ['090271015e1a9a71e3e24e46b79d3a8c3875121a', '090271014f4fb8e24dde4ce89670e1ef8dfc0beb', '3']
         },
         pageInfo: {
           pageNum: 1,
@@ -208,23 +255,36 @@ export default {
           total: 0
         }
       },
-      selectList: [],
-      patchPositionParam: {
+      selectList: [], // 批签文件数组
+      singlePositionParam: { // 按位置单签
+        singlePosition: {},
+        signType: '',
+        pin: '',
+        fileId: '',
+        fileName: ''
+      },
+      patchPositionParam: { // 按位置批签
         selectFiles: new Map(),
+        selectFileIds: [],
         patchPosition: {},
         signType: '',
         pin: ''
       },
-      patchKeywordParam: {
-        selectFiles: new Map(),
+      singleKeywordParam: { // 按关键字单签
+        fileId: '',
+        fileName: '',
         keyword: '',
         isDeviation: '',
         signMode: '',
         signType: '',
         pin: ''
       },
-      singlePositionParam: {
-        singlePosition: {},
+      patchKeywordParam: { // 按关键字批签
+        selectFiles: new Map(),
+        selectFileIds: [],
+        keyword: '',
+        isDeviation: '',
+        signMode: '',
         signType: '',
         pin: ''
       }
@@ -237,6 +297,16 @@ export default {
     window.addEventListener('message', this.handleMessage)
   },
   methods: {
+    handleSizeChange(val) {
+      console.log(`每页 ${val} 条`)
+      this.queryParam.pageInfo.pageSize = val
+      this.queryPage(this.queryParam)
+    },
+    handleCurrentChange(val) {
+      console.log(`当前页: ${val}`)
+      this.queryParam.pageInfo.pageNum = val - 1
+      this.queryPage(this.queryParam)
+    },
     queryPage(queryParam) {
       SealManageApi.getPdfList(queryParam).then(res => {
         this.pdfList = res.data.list
@@ -252,9 +322,13 @@ export default {
     signSingleM({ $index, row }) {
       console.log(row.fileId)
       const id = row.fileId
+      this.singlePositionParam.fileName = row.fileName
+      this.singlePositionParam.fileId = row.fileId
+      this.singleKeywordParam.fileName = row.fileName
+      this.singleKeywordParam.fileId = row.fileId
       // 打开iframe页面
       this.dialogSingleShow = true
-      this.iframePdf = this.baseURL + '/px-common-signature/pdfView?' + 'id=' + id
+      this.iframePdf = this.baseURL + '/px-common-signature/pdfView?' + 'fileId=' + id
       let _scrollWidth = document.body.scrollWidth
       const _scrollHeight = document.body.scrollHeight
       if (_scrollWidth < 985) {
@@ -262,16 +336,6 @@ export default {
       }
       this.iframeWidth = _scrollWidth * 0.9
       this.iframeHigh = _scrollHeight * 0.78
-    },
-    handleSizeChange(val) {
-      console.log(`每页 ${val} 条`)
-      this.queryParam.pageInfo.pageSize = val
-      this.queryPage(this.queryParam)
-    },
-    handleCurrentChange(val) {
-      console.log(`当前页: ${val}`)
-      this.queryParam.pageInfo.pageNum = val - 1
-      this.queryPage(this.queryParam)
     },
     patchSignPosition() {
       // 按位置批签
@@ -282,7 +346,7 @@ export default {
       }
       // 打开iframe页面
       this.dialogSingleShow = true
-      this.iframePdf = this.baseURL + '/px-common-signature/pdfView?' + 'id=' + id + '&type=pSign'
+      this.iframePdf = this.baseURL + '/px-common-signature/pdfView?' + 'fileId=' + id + '&type=pSign'
       // alert(this.iframePdf)
       let _scrollWidth = document.body.scrollWidth
       const _scrollHeight = document.body.scrollHeight
@@ -327,6 +391,12 @@ export default {
             console.log(this.patchPositionParam.patchPosition)
           }
           break
+        case 'singleSignKeyword':
+          console.log('按关键字单签')
+          if (data.params.success === true) {
+            // 业务逻辑
+            this.dialogKeywordSingleVisible = true
+          }
       }
     },
     positionSignSure() { // 位置批签签章确认
@@ -336,10 +406,13 @@ export default {
       // 业务流程---------------这个地方有 bug，之后解决
       for (let i = 0; i < this.selectList.length; i++) {
         this.patchPositionParam.selectFiles.set(this.selectList[i].fileId, this.selectList[i].fileName)
+        this.patchPositionParam.selectFileIds.push(this.selectList[i].fileId)
       }
       console.log('待签章的文件为:' + JSON.stringify(this.patchPositionParam.selectFiles))
+      console.log(this.patchPositionParam.selectFileIds)
       // 开始签章
-      PatchSignApi.patchPositionOrKeyword(this.patchPositionParam).then((e) => {
+      this.progressVisible = true
+      PatchSignApi.patchPositionOrKeyword(this.patchPositionParam, this.singlePercentage).then((e) => {
         console.log(e)
         console.log(e.get('success'))
         console.log(e.get('error'))
@@ -354,11 +427,13 @@ export default {
       this.patchKeywordParam.selectFiles = new Map()
       for (let i = 0; i < this.selectList.length; i++) {
         this.patchKeywordParam.selectFiles.set(this.selectList[i].fileId, this.selectList[i].fileName)
+        this.patchKeywordParam.selectFileIds.push(this.selectList[i].fileId)
       }
-      console.log(this.patchKeywordParam.selectFiles)
+      console.log('文件' + this.patchKeywordParam.selectFiles)
+      console.log(this.patchPositionParam.selectFileIds)
       // console.log(PatchSignApi.patchPositionOrKeyword(this.patchKeywordParam))
       // 开始签章
-      PatchSignApi.patchPositionOrKeyword(this.patchKeywordParam).then((e) => {
+      PatchSignApi.patchPositionOrKeyword(this.patchKeywordParam, this.singlePercentage).then((e) => {
         console.log(e)
         console.log(e.get('success'))
         console.log(e.get('error'))
@@ -375,7 +450,30 @@ export default {
       // 按位置单签
       // 先测试进度条
       this.progressVisible = true
-      SingleSignApi.singleSignPosition(this.singlePositionParam, this.singlePercentage)
+      const _this = this
+      SingleSignApi.singleSignPosition(this.singlePositionParam, this.singlePercentage).then((e) => {
+        console.log('进入')
+        console.log(e)
+        // 关闭模态窗口，关闭进度条
+        _this.progressVisible = false
+        // 清空表单
+        _this.resetForm('singlePositionParam')
+      })
+    },
+    keywordSingleSignSure() {
+      // 按关键字单签确定按钮
+      this.progressVisible = true
+      SingleSignApi.singleSignKeyword(this.singleKeywordParam, this.singlePercentage).then((e) => {
+        console.log(e)
+      })
+    },
+    verifySignFiles() {
+      const param = {
+        'fileIds': ['090271015e1a9a71e3e24e46b79d3a8c3875121a', '090271014f4fb8e24dde4ce89670e1ef8dfc0beb', '090271011c21812b56eb4e51a0e1d0372a636779']
+      }
+      SealManageApi.verifySignFiles(param).then(res => {
+        console.log(res)
+      })
     }
   }
 }
