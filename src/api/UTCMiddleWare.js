@@ -1392,11 +1392,11 @@ function UTCMiddleWare_Daemon() {
     })
   }
   // 检测钥匙PIN码
-  self.OpenEKey = function(password, callback) {
+  self.OpenEKey = function(pw, callback) {
     UTCMiddleWare.LocalAjaxPost({
       'function': 'ChkKeyPin',
       value: {
-        pin: password,
+        pin: pw,
         proID: s.code
       }
     }, function(state, code, data) {
@@ -1418,11 +1418,11 @@ function UTCMiddleWare_Daemon() {
   }
   /* -----数字签名----- */
   // 字符串签名
-  self.SignString = function(password, DN, blank, source, selectedAlg, bool, callback) {
+  self.SignString = function(pw, DN, blank, source, selectedAlg, bool, callback) {
     UTCMiddleWare.LocalAjaxPost({
       'function': 'SignMsg',
       value: {
-        pin: password,
+        pin: pw,
         data: source,
         dn: DN || '',
         hashAlg: selectedAlg,
@@ -1433,11 +1433,11 @@ function UTCMiddleWare_Daemon() {
     })
   }
   // 字符串签名分离
-  self.SignStringDetach = function(password, DN, blank, source, selectedAlg, bool, callback) {
+  self.SignStringDetach = function(pw, DN, blank, source, selectedAlg, bool, callback) {
     UTCMiddleWare.LocalAjaxPost({
       'function': 'SignMsgDetached',
       value: {
-        pin: password,
+        pin: pw,
         data: source,
         dn: DN || '',
         hashAlg: selectedAlg,
@@ -1473,11 +1473,11 @@ function UTCMiddleWare_Daemon() {
     })
   }
   // 文件签名
-  self.DoSignFile = function(password, DN, path, hachtype, callback) {
+  self.DoSignFile = function(pw, DN, path, hachtype, callback) {
     UTCMiddleWare.LocalAjaxPost({
       'function': 'SignFileDetachedToMsg',
       value: {
-        pin: password,
+        pin: pw,
         srcFile: path,
         dn: DN || '',
         hashAlg: hachtype,
@@ -1488,11 +1488,11 @@ function UTCMiddleWare_Daemon() {
     })
   }
   // 非分离式文件签名
-  self.DoSignFile2 = function(password, DN, path, hachtype, suf, callback) {
+  self.DoSignFile2 = function(pw, DN, path, hachtype, suf, callback) {
     UTCMiddleWare.LocalAjaxPost({
       'function': 'SignFile',
       value: {
-        pin: password,
+        pin: pw,
         srcFile: path,
         outFile: suf,
         dn: DN || '',
@@ -1652,12 +1652,12 @@ function UTCMiddleWare_Daemon() {
   /* -----数据加密----- */
   /* -----电子签章----- */
   // 表单签章
-  self.DoWebSealByEKey = function(dn, password, boundID, boundVal, dataID, callback) {
+  self.DoWebSealByEKey = function(dn, pw, boundID, boundVal, dataID, callback) {
     UTCMiddleWare.LocalAjaxPost({
       'function': 'DoWebSealByEKey',
       value: {
         dn: dn,
-        password: password,
+        password: pw,
         boundID: boundID,
         boundVal: boundVal,
         dataID: dataID,
@@ -1781,11 +1781,11 @@ function UTCMiddleWare_Daemon() {
   }
   /* -----电子签章----- */
   // 获取印章图片数据
-  self.GetEKeyPic = function(password, callback) {
+  self.GetEKeyPic = function(pw, callback) {
     UTCMiddleWare.LocalAjaxPost({
       'function': 'GetSealImage',
       value: {
-        pin: password,
+        pin: pw,
         proID: s.code
       }
     }, function(state, code, data) {
