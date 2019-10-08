@@ -1,5 +1,5 @@
 <template>
-  <textarea ref="mycode" v-model="code" class="codesql" style="height:600px;width:600px;" />
+  <textarea ref="sqlEdit" v-model="code" class="codesql" style="height:600px;width:600px;" />
 </template>
 
 <script>
@@ -21,17 +21,15 @@ export default {
     }
   },
   mounted() {
-    debugger
-    const mime = 'text/x-mariadb'
-    // let theme = 'ambiance'//设置主题，不设置的会使用默认主题
-    const editor = CodeMirror.fromTextArea(this.$refs.mycode, {
-      mode: mime, // 选择对应代码编辑器的语言，我这边选的是数据库，根据个人情况自行设置即可
+    const theme = 'ambiance' // 设置主题，不设置的会使用默认主题
+    const editor = CodeMirror.fromTextArea(this.$refs.sqlEdit, {
+      mode: 'text/x-mariadb', // 选择SQL编辑语言
       indentWithTabs: true,
       smartIndent: true,
       lineNumbers: true,
       matchBrackets: true,
-      // theme: theme,
-      // autofocus: true,
+      theme: theme,
+      autofocus: true,
       extraKeys: { 'Ctrl': 'autocomplete' }, // 自定义快捷键
       hintOptions: { // 自定义提示选项
         tables: {

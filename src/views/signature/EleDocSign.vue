@@ -234,7 +234,7 @@ export default {
       currentPage: 1,
       queryParam: {
         data: {
-          fileIds: ['090271015e1a9a71e3e24e46b79d3a8c3875121a', '090271014f4fb8e24dde4ce89670e1ef8dfc0beb', '3']
+          fileIds: ['09027101bf6d952cc7f74c97b9a7bcdf2dc90f1f', '0902710137b29bf55ddf4a36ae02a53498ff579e', '09027101bf6d952cc7f74c97b9a7bcdf2dc90f1f']
         },
         pageInfo: {
           pageNum: 1,
@@ -343,6 +343,13 @@ export default {
       let id = ''
       if (this.selectList != null && this.selectList.length !== 0) {
         id = this.selectList[0].fileId
+      } else {
+        // 未选择
+        this.$message({
+          type: 'error',
+          message: '未选择要批签的文件!'
+        })
+        return
       }
       // 打开iframe页面
       this.dialogSingleShow = true
@@ -450,14 +457,13 @@ export default {
       // 按位置单签
       // 先测试进度条
       this.progressVisible = true
-      const _this = this
       SingleSignApi.singleSignPosition(this.singlePositionParam, this.singlePercentage).then((e) => {
         console.log('进入')
         console.log(e)
         // 关闭模态窗口，关闭进度条
-        _this.progressVisible = false
+        this.progressVisible = false
         // 清空表单
-        _this.resetForm('singlePositionParam')
+        this.resetForm('singlePositionParam')
       })
     },
     keywordSingleSignSure() {
@@ -467,9 +473,10 @@ export default {
         console.log(e)
       })
     },
+    // 批量验签
     verifySignFiles() {
       const param = {
-        'fileIds': ['090271015e1a9a71e3e24e46b79d3a8c3875121a', '090271014f4fb8e24dde4ce89670e1ef8dfc0beb', '090271011c21812b56eb4e51a0e1d0372a636779']
+        'fileIds': ['090271012a59e07ac991489bb8e30a06f56a0ca5', '090271012a59e07ac991489bb8e30a06f56a0ca5', '090271012a59e07ac991489bb8e30a06f56a0ca5']
       }
       SealManageApi.verifySignFiles(param).then(res => {
         console.log(res)

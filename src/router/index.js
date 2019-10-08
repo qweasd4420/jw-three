@@ -109,7 +109,7 @@ export const asyncRoutes = [
   // nestedRouter,
   // tableRouter,
   signatureRouter,
-  groupRouter,
+  // groupRouter,
   dragpageRouter,
   {
     path: '/theme',

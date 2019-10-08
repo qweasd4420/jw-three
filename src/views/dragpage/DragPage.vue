@@ -3,32 +3,32 @@
     <el-aside
       v-if="isCollapse"
       style="background-color: rgb(238, 241, 246);padding:2px 6px">
-      <!--左侧内容-->
       <el-input
+        v-model="filterText"
         style="padding: 18px 0 18px 0;background: #ffffff;"
-        placeholder="输入关键字进行过滤"
-        v-model="filterText">
+        placeholder="输入关键字进行过滤">
       </el-input>
+      <!--左侧内容-->
       <el-tree
+        ref="tree"
         class="filter-tree"
         :props="treeProps"
         style="height:calc(100vh - 185px);"
-        :data="data"
-        ref="tree"
+        :data="treeData"
         node-key="id"
         default-expand-all
         :highlight-current="true"
         :expand-on-click-node="false"
-        @node-click="handleNodeClick"
         :filter-node-method="filterNode"
+        @node-click="handleNodeClick"
         @node-contextmenu="rightClick"
       >
-        <span class="custom-tree-node" slot-scope="{ node, data }">
+        <span slot-scope="{ node, data }" class="custom-tree-node">
           <span>
-            <template v-if="data.grade != undefined && data.grade != undefined && data.grade == '2'" >
+            <template v-if="data.grade !== undefined && data.grade === '2'" >
               <i class="el-icon-document"></i>&nbsp;{{ node.label }}
             </template>
-            <template v-if="data.grade != undefined && data.grade != undefined && (data.grade == '1' || data.grade == '0')" >
+            <template v-if="data.grade !== undefined && (data.grade === '1' || data.grade === '0')">
               <i class="iconfont icon-icon_workfile_line"></i>&nbsp;{{ node.label }}
             </template>
           </span>
@@ -91,10 +91,10 @@
         <div style="background: #ffffff;width: 100%;height:150px;position:relative;">
           <el-form ref="addPage" :model="addPage" :rules="rules" label-width="150px" style="position: absolute;top:20%;left:40%;transform: translate(-50%,-50%)">
             <el-form-item label="页面名称" prop="pageName">
-              <el-input v-model="addPage.pageName" placeholder="请输入页面名称" validate-event clearable style="width: 180px"/>
+              <el-input v-model="addPage.pageName" placeholder="请输入页面名称" validate-event clearable style="width: 180px" />
             </el-form-item>
             <el-form-item label="页面描述" prop="pageDesc">
-              <el-input v-model="addPage.pageDesc" placeholder="请输入页面描述" validate-event clearable style="width: 180px"/>
+              <el-input v-model="addPage.pageDesc" placeholder="请输入页面描述" validate-event clearable style="width: 180px" />
             </el-form-item>
           </el-form>
           <span slot="footer" class="dialog-footer" style="position: absolute;top:70%;left:50%;transform: translate(-50%,-50%)">
@@ -127,7 +127,7 @@ export default {
   },
   data() {
     return {
-      data: [
+      treeData: [
         {
           id: '1',
           label: '电力市场',
@@ -192,6 +192,12 @@ export default {
       }
     }
   },
+  watch: {
+    filterText(val) {
+      console.log(val)
+      this.$refs.tree.filter(val)
+    }
+  },
   mounted() {
     this.initTree()
     if (this.menuVisible || this.menuOneVisible || this.menuTwoVisible || this.menuThreeVisible) {
@@ -203,12 +209,6 @@ export default {
   },
   beforeDestroy() {
     this.$EventBus.$off('childClick')
-  },
-  watch: {
-    filterText(val) {
-      console.log(val)
-      this.$refs.tree.filter(val)
-    }
   },
   methods: {
     // ---------------------------- 逻辑模块 ----------------------------
@@ -252,7 +252,7 @@ export default {
     // ---------------------------- 业务模块 ----------------------------
     initTree() {
       TreeManageApi.initTree().then(res => {
-        this.data = res.data
+        this.treeData = res.data
       })
     },
     handleNodeClick(data, node) {
@@ -379,7 +379,8 @@ export default {
       // 编辑页面
       // 打开model窗口，在model窗口中打开编辑页面
       this.dialogEditPage = true
-      this.editPageUrl = 'http://192.100.2.67:13035/#/'
+      // this.editPageUrl = 'http://192.100.2.67:13035/#/'
+      this.editPageUrl = 'http://localhost:8080/#/'
       let _scrollWidth = document.body.scrollWidth
       const _scrollHeight = document.body.scrollHeight
       const iTop = window.screen.height
@@ -422,20 +423,6 @@ export default {
 </script>
 
 <style scoped>
-.none {
-  display: none;
-}
-.block {
-  display: block;
-}
-.el-header {
-  background-color: #b3c0d1;
-  color: #333;
-  line-height: 60px;
-}
-.el-aside {
-  color: #333;
-}
 #menuOne ul li:hover{
   background: #a1a3a6;/* #409EFF */
 }
@@ -445,5 +432,4 @@ export default {
 #menuThree ul li:hover{
   background: #a1a3a6;/* #409EFF */
 }
-
 </style>

@@ -1,20 +1,19 @@
 import Layout from '@/layout'
-import GroupTxl from '../../views/test/grouptxl'
 
 const groupRouter = {
-  path: '/grouptxl',
+  path: '/GroupTxl',
   component: Layout,
   redirect: 'noRedirect',
-  name: 'grouptxl',
+  name: 'GroupTxl',
   meta: {
     title: '测试',
     icon: 'component'
   },
   children: [
     {
-      path: 'GroupTxl',
-      component: GroupTxl,
-      name: 'GroupTxl',
+      path: 'CodeMirror',
+      component: () => import('@/views/test/CodeMirror'),
+      name: 'CodeMirror',
       meta: { title: 'SQL编辑' }
     }
   ]

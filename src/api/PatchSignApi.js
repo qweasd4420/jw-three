@@ -39,8 +39,8 @@ export default class PatchSignApi {
 
     // TODO 批签返回结果
     const patchSignRes = new Map()
-    const success = new Array([])
-    const error = new Array([])
+    const success = []
+    const error = []
 
     let Dn // 证书
     let filesHash // 所有文件的hash值
@@ -112,8 +112,8 @@ export default class PatchSignApi {
                 if (keyword === undefined || keyword === null || keyword === '') {
                   // 按位置获取PDF摘要（这步在批签内要修改，以符合批签需求）
                   const param = {
-                    xPos: xPos,
-                    yPos: yPos,
+                    x: xPos,
+                    y: yPos,
                     sealInfoBase64: signInfo,
                     strReason: '',
                     strLocation: '',
@@ -179,8 +179,8 @@ export default class PatchSignApi {
                     y = 0
                   }
                   const param = {
-                    xPos: x,
-                    yPos: y,
+                    x: x,
+                    y: y,
                     sealInfoBase64: signInfo,
                     strReason: '',
                     strLocation: '',
@@ -381,31 +381,36 @@ export default class PatchSignApi {
   static patchSign(patchSignRes, error, success, filesHash, pin, Dn, singlePercentage) {
     let time = 0
     // 这个地方应该添加一个成功状态
-    for (let i = 0; i < filesHash.length; i++) {
+    for (let i = 0; i <= filesHash.length; i++) {
       let fileHash
       let fileName
       let fileId
       time = time + 1
-      if (filesHash[i].digestStatus === true) { // 通过定义一个局部变量i遍历获取map里面的所有key值
-        fileHash = filesHash[i].digest
-        fileName = filesHash[i].fileName
-        fileId = filesHash[i].fileId
-      } else {
-        // TODO 记录失败的文件信息
-        const param = {
-          fileId: filesHash[i].fileId,
-          fileName: filesHash[i].fileName,
-          message: filesHash[i].digest
+      if (i !== filesHash.length) { // 轮询次数 +1
+        if (filesHash[i].digestStatus === true) { // 通过定义一个局部变量i遍历获取map里面的所有key值
+          fileHash = filesHash[i].digest
+          fileName = filesHash[i].fileName
+          fileId = filesHash[i].fileId
+        } else {
+          // TODO 记录失败的文件信息
+          const param = {
+            fileId: filesHash[i].fileId,
+            fileName: filesHash[i].fileName,
+            message: filesHash[i].digest
+          }
+          error.push(param)
+          continue
         }
-        error.push(param)
-        continue
+        // TODO 最后再装载
+        // 处理这个里的异常
+        PatchSignApi.signPdf(fileId, fileName, fileHash, Dn, pin, success, error)
+      } else {
+        // 最后一次轮询条件：i === filesHash.length，这个时候数组已空
       }
-      // TODO 最后再装载
-      // 处理这个里的异常
-      PatchSignApi.signPdf(fileId, fileName, fileHash, Dn, pin, success, error)
     }
     // 当计的次数超过的时候执行
-    if (time >= filesHash.length) {
+    if (time >= filesHash.length + 1) {
+      singlePercentage.percentage = 100
       // TODO 先设置2秒，后面对接文件接口后设置为1
       setTimeout(function() {
       }, 2000)
