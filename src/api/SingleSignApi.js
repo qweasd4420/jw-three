@@ -117,6 +117,7 @@ export default class SingleSignApi {
                               // 需要在这个外面包装一层，在.then方法中resolve
                               SingleSignApi.sealStdPdfReturn(param, fileId, fileName, resultMap, singlePercentage).then(res => {
                                 // 最终返回
+                                console.log(res)
                                 resolve(res)
                               })
                             })
@@ -439,48 +440,42 @@ export default class SingleSignApi {
               duration: 2 * 1000,
               center: true
             })
-            return new Promise(resolve => {
-              // TODO 保存返回信息
-              resultMap = {
-                fileId: fileId,
-                fileName: fileName,
-                status: 0,
-                message: '签章成功',
-                signFileId: res.data.data
-              }
-              resolve(resultMap)
-            })
+            // TODO 保存返回信息
+            resultMap = {
+              fileId: fileId,
+              fileName: fileName,
+              status: 0,
+              message: '签章成功',
+              signFileId: res.data.data
+            }
+            resolve(resultMap)
           } else {
             // 进入该else代表该文件签章失败，自动结束此次循环，并添加信息
             // TODO 记录失败的文件信息
             SingleSignApi.failMessage(res.data.message)
-            return new Promise(resolve => {
-              // TODO 保存返回信息
-              resultMap = {
-                fileId: fileId,
-                fileName: fileName,
-                status: 1,
-                message: res.data.message,
-                signFileId: ''
-              }
-              resolve(resultMap)
-            })
-          }
-        } else {
-          // 进入该else代表该文件签章失败，自动结束此次循环，并添加信息
-          // TODO 记录失败的文件信息
-          SingleSignApi.failMessage('生成签章数据接口调用失败')
-          return new Promise(resolve => {
             // TODO 保存返回信息
             resultMap = {
               fileId: fileId,
               fileName: fileName,
               status: 1,
-              message: '生成签章数据接口调用失败',
+              message: res.data.message,
               signFileId: ''
             }
             resolve(resultMap)
-          })
+          }
+        } else {
+          // 进入该else代表该文件签章失败，自动结束此次循环，并添加信息
+          // TODO 记录失败的文件信息
+          SingleSignApi.failMessage('生成签章数据接口调用失败')
+          // TODO 保存返回信息
+          resultMap = {
+            fileId: fileId,
+            fileName: fileName,
+            status: 1,
+            message: '生成签章数据接口调用失败',
+            signFileId: ''
+          }
+          resolve(resultMap)
         }
       })
     })

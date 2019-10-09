@@ -136,6 +136,7 @@ export default class PatchSignApi {
                         singlePercentage.percentage = 66
                         PatchSignApi.patchSign(patchSignRes, error, success, filesHash, pin, Dn, singlePercentage).then(res => {
                           // 返回参数
+                          console.log(res)
                           resolve(res)
                         })
                       })
@@ -201,8 +202,9 @@ export default class PatchSignApi {
                         return
                       }
                       const p = new Promise((resolve) => {
-                        singlePercentage.percentage = 66
+                        singlePercentage.percentage = 65
                         PatchSignApi.patchSign(patchSignRes, error, success, filesHash, pin, Dn, singlePercentage).then(res => {
+                          console.log(res)
                           resolve(res)
                         })
                       })
@@ -267,94 +269,50 @@ export default class PatchSignApi {
       error.push(param)
     }
     // 生成签章数据
-    const p = new Promise(resolve => {
-      UTCMiddleWare.GetPdfStdSealDataByKey({
-        hash: fileHash,
-        dn: Dn,
-        pin: pin,
-        success: function(data) {
-          const param = {
-            fileName: fileName,
-            signInfo: data
-          }
-          // 签章
-          PatchSignApi.sealStdPdfReturnByte(param).then(res => {
-            time = time + 1
-            if (res.status === 0) {
-              // 此接口调用成功，不代表签章成功，需要再判断内层status
-              if (res.data.status === 0) {
-                // TODO 记录成功的文件信息
-                const param = {
-                  fileId: fileId,
-                  fileName: fileName,
-                  message: '文件签章成功',
-                  signFileId: res.data.data
-                }
-                success.push(param)
-              } else {
-                // 进入该else代表该文件签章失败，自动结束此次循环，并添加信息
-                // TODO 记录失败的文件信息
-                const param = {
-                  fileId: fileId,
-                  fileName: fileName,
-                  message: res.data.message
-                }
-                error.push(param)
+    UTCMiddleWare.GetPdfStdSealDataByKey({
+      hash: fileHash,
+      dn: Dn,
+      pin: pin,
+      success: function(data) {
+        const param = {
+          fileName: fileName,
+          signInfo: data
+        }
+        // 签章
+        PatchSignApi.sealStdPdfReturnByte(param).then(res => {
+          time = time + 1
+          if (res.status === 0) {
+            // 此接口调用成功，不代表签章成功，需要再判断内层status
+            if (res.data.status === 0) {
+              // TODO 记录成功的文件信息
+              const param = {
+                fileId: fileId,
+                fileName: fileName,
+                message: '文件签章成功',
+                signFileId: res.data.data
               }
+              success.push(param)
             } else {
               // 进入该else代表该文件签章失败，自动结束此次循环，并添加信息
               // TODO 记录失败的文件信息
               const param = {
                 fileId: fileId,
                 fileName: fileName,
-                message: '生成签章数据接口调用失败'
+                message: res.data.message
               }
               error.push(param)
-              PatchSignApi.failMessage('生成签章数据接口调用失败')
             }
-            // 当计的次数超过的时候执行
-            if (time >= filesHash.length) {
-              singlePercentage.percentage = 100
-              // TODO 先设置2秒，后面对接文件接口后设置为1
-              setTimeout(function() {
-              }, 2000)
-              return new Promise(resolve => {
-                patchSignRes.set('success', success)
-                patchSignRes.set('error', error)
-                resolve(patchSignRes)
-              })
-            }
-            // 递归
-            PatchSignApi.signPdf(filesHash, Dn, pin, success, error, patchSignRes, time, singlePercentage)
-          }).catch(res => {
-            console.log('阻止事件冒泡' + res)
+          } else {
+            // 进入该else代表该文件签章失败，自动结束此次循环，并添加信息
             // TODO 记录失败的文件信息
             const param = {
               fileId: fileId,
               fileName: fileName,
-              message: res
+              message: '生成签章数据接口调用失败'
             }
             error.push(param)
-          }).then((e) => {
-            // 阻止事件冒泡
-            console.log(e)
-            return new Promise(resolve => {
-              resolve(e)
-            })
-            // console.log('阻止promise冒泡')
-          })
-        },
-        fail(message) {
-          time = time + 1
-          // 进入该fail代表该文件签章失败，自动结束此次循环，并添加信息
-          // TODO 记录失败的文件信息
-          const param = {
-            fileId: fileId,
-            fileName: fileName,
-            message: message
+            PatchSignApi.failMessage('生成签章数据接口调用失败')
           }
-          error.push(param)
-          // PatchSignApi.failMessage(message)
           // 当计的次数超过的时候执行
           if (time >= filesHash.length) {
             singlePercentage.percentage = 100
@@ -369,36 +327,78 @@ export default class PatchSignApi {
           }
           // 递归
           PatchSignApi.signPdf(filesHash, Dn, pin, success, error, patchSignRes, time, singlePercentage)
-        },
-        error(message) {
-          // 进入该error代表该文件签章失败，自动结束此次循环，并添加信息
-          time = time + 1
+        }).catch(res => {
+          console.log('阻止事件冒泡' + res)
           // TODO 记录失败的文件信息
           const param = {
             fileId: fileId,
             fileName: fileName,
-            message: message
+            message: res
           }
           error.push(param)
-          // 当计的次数超过的时候执行
-          if (time >= filesHash.length) {
-            singlePercentage.percentage = 100
-            // TODO 先设置2秒，后面对接文件接口后设置为1
-            setTimeout(function() {
-            }, 2000)
-            return new Promise(resolve => {
-              patchSignRes.set('success', success)
-              patchSignRes.set('error', error)
-              resolve(patchSignRes)
-            })
-          }
-          // PatchSignApi.errorMessage(message)
+        }).then((e) => {
+          // 阻止事件冒泡
+          console.log(e)
           // 递归
-          PatchSignApi.signPdf(filesHash, Dn, pin, success, error, patchSignRes, time, singlePercentage)
+          // return new Promise(resolve => {
+          //   resolve(e)
+          // })
+          // console.log('阻止promise冒泡')
+        })
+      },
+      fail(message) {
+        time = time + 1
+        // 进入该fail代表该文件签章失败，自动结束此次循环，并添加信息
+        // TODO 记录失败的文件信息
+        const param = {
+          fileId: fileId,
+          fileName: fileName,
+          message: message
         }
-      })
+        error.push(param)
+        // PatchSignApi.failMessage(message)
+        // 当计的次数超过的时候执行
+        if (time >= filesHash.length) {
+          singlePercentage.percentage = 100
+          // TODO 先设置2秒，后面对接文件接口后设置为1
+          setTimeout(function() {
+          }, 2000)
+          return new Promise(resolve => {
+            patchSignRes.set('success', success)
+            patchSignRes.set('error', error)
+            resolve(patchSignRes)
+          })
+        }
+        // 递归
+        PatchSignApi.signPdf(filesHash, Dn, pin, success, error, patchSignRes, time, singlePercentage)
+      },
+      error(message) {
+        // 进入该error代表该文件签章失败，自动结束此次循环，并添加信息
+        time = time + 1
+        // TODO 记录失败的文件信息
+        const param = {
+          fileId: fileId,
+          fileName: fileName,
+          message: message
+        }
+        error.push(param)
+        // 当计的次数超过的时候执行
+        if (time >= filesHash.length) {
+          singlePercentage.percentage = 100
+          // TODO 先设置2秒，后面对接文件接口后设置为1
+          setTimeout(function() {
+          }, 2000)
+          return new Promise(resolve => {
+            patchSignRes.set('success', success)
+            patchSignRes.set('error', error)
+            resolve(patchSignRes)
+          })
+        }
+        // PatchSignApi.errorMessage(message)
+        // 递归
+        PatchSignApi.signPdf(filesHash, Dn, pin, success, error, patchSignRes, time, singlePercentage)
+      }
     })
-    return p
   }
   /**
    * 根据位置获取摘要
@@ -453,7 +453,7 @@ export default class PatchSignApi {
     // 处理这个里的异常
     return new Promise((resolve) => {
       PatchSignApi.signPdf(filesHash, Dn, pin, success, error, patchSignRes, time, singlePercentage).then(res => {
-        resolve(res)
+        console.log(res)
       })
     })
     // for (let i = 0; i < filesHash.length; i++) {
