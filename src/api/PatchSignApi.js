@@ -239,97 +239,166 @@ export default class PatchSignApi {
 
   /**
    * 签署
-   * @param fileId
-   * @param fileName
-   * @param fileHash
+   * @param filesHash
    * @param Dn
    * @param pin
    * @param success 成功文件
    * @param error 失败文件
+   * @param patchSignRes
+   * @param time
+   * @param singlePercentage
    */
-  static signPdf(fileId, fileName, fileHash, Dn, pin, success, error) {
+  static signPdf(filesHash, Dn, pin, success, error, patchSignRes, time, singlePercentage) {
+    // 获取签章参数
+    let fileHash
+    let fileName
+    let fileId
+    if (filesHash[time].digestStatus === true) { // 通过定义一个局部变量i遍历获取map里面的所有key值
+      fileHash = filesHash[time].digest
+      fileName = filesHash[time].fileName
+      fileId = filesHash[time].fileId
+    } else {
+      // TODO 记录失败的文件信息
+      const param = {
+        fileId: filesHash[time].fileId,
+        fileName: filesHash[time].fileName,
+        message: filesHash[time].digest
+      }
+      error.push(param)
+    }
     // 生成签章数据
-    UTCMiddleWare.GetPdfStdSealDataByKey({
-      hash: fileHash,
-      dn: Dn,
-      pin: pin,
-      success: function(data) {
-        const param = {
-          fileName: fileName,
-          signInfo: data
-        }
-        // 签章
-        PatchSignApi.sealStdPdfReturnByte(param).then(res => {
-          if (res.status === 0) {
-            // 此接口调用成功，不代表签章成功，需要再判断内层status
-            if (res.data.status === 0) {
-              // TODO 记录成功的文件信息
-              const param = {
-                fileId: fileId,
-                fileName: fileName,
-                message: '文件签章成功',
-                signFileId: res.data.data
+    const p = new Promise(resolve => {
+      UTCMiddleWare.GetPdfStdSealDataByKey({
+        hash: fileHash,
+        dn: Dn,
+        pin: pin,
+        success: function(data) {
+          const param = {
+            fileName: fileName,
+            signInfo: data
+          }
+          // 签章
+          PatchSignApi.sealStdPdfReturnByte(param).then(res => {
+            time = time + 1
+            if (res.status === 0) {
+              // 此接口调用成功，不代表签章成功，需要再判断内层status
+              if (res.data.status === 0) {
+                // TODO 记录成功的文件信息
+                const param = {
+                  fileId: fileId,
+                  fileName: fileName,
+                  message: '文件签章成功',
+                  signFileId: res.data.data
+                }
+                success.push(param)
+              } else {
+                // 进入该else代表该文件签章失败，自动结束此次循环，并添加信息
+                // TODO 记录失败的文件信息
+                const param = {
+                  fileId: fileId,
+                  fileName: fileName,
+                  message: res.data.message
+                }
+                error.push(param)
               }
-              success.push(param)
             } else {
               // 进入该else代表该文件签章失败，自动结束此次循环，并添加信息
               // TODO 记录失败的文件信息
               const param = {
                 fileId: fileId,
                 fileName: fileName,
-                message: res.data.message
+                message: '生成签章数据接口调用失败'
               }
               error.push(param)
+              PatchSignApi.failMessage('生成签章数据接口调用失败')
             }
-          } else {
-            // 进入该else代表该文件签章失败，自动结束此次循环，并添加信息
+            // 当计的次数超过的时候执行
+            if (time >= filesHash.length) {
+              singlePercentage.percentage = 100
+              // TODO 先设置2秒，后面对接文件接口后设置为1
+              setTimeout(function() {
+              }, 2000)
+              return new Promise(resolve => {
+                patchSignRes.set('success', success)
+                patchSignRes.set('error', error)
+                resolve(patchSignRes)
+              })
+            }
+            // 递归
+            PatchSignApi.signPdf(filesHash, Dn, pin, success, error, patchSignRes, time, singlePercentage)
+          }).catch(res => {
+            console.log('阻止事件冒泡' + res)
             // TODO 记录失败的文件信息
             const param = {
               fileId: fileId,
               fileName: fileName,
-              message: '生成签章数据接口调用失败'
+              message: res
             }
             error.push(param)
-            PatchSignApi.failMessage('生成签章数据接口调用失败')
-          }
-        }).catch(res => {
-          console.log('阻止事件冒泡' + res)
+          }).then((e) => {
+            // 阻止事件冒泡
+            console.log(e)
+            return new Promise(resolve => {
+              resolve(e)
+            })
+            // console.log('阻止promise冒泡')
+          })
+        },
+        fail(message) {
+          time = time + 1
+          // 进入该fail代表该文件签章失败，自动结束此次循环，并添加信息
           // TODO 记录失败的文件信息
           const param = {
             fileId: fileId,
             fileName: fileName,
-            message: res
+            message: message
           }
           error.push(param)
-        }).then((e) => {
-          // 阻止事件冒泡
-          console.log(e)
-          console.log('阻止promise冒泡')
-        })
-      },
-      fail(message) {
-        // 进入该fail代表该文件签章失败，自动结束此次循环，并添加信息
-        // TODO 记录失败的文件信息
-        const param = {
-          fileId: fileId,
-          fileName: fileName,
-          message: message
+          // PatchSignApi.failMessage(message)
+          // 当计的次数超过的时候执行
+          if (time >= filesHash.length) {
+            singlePercentage.percentage = 100
+            // TODO 先设置2秒，后面对接文件接口后设置为1
+            setTimeout(function() {
+            }, 2000)
+            return new Promise(resolve => {
+              patchSignRes.set('success', success)
+              patchSignRes.set('error', error)
+              resolve(patchSignRes)
+            })
+          }
+          // 递归
+          PatchSignApi.signPdf(filesHash, Dn, pin, success, error, patchSignRes, time, singlePercentage)
+        },
+        error(message) {
+          // 进入该error代表该文件签章失败，自动结束此次循环，并添加信息
+          time = time + 1
+          // TODO 记录失败的文件信息
+          const param = {
+            fileId: fileId,
+            fileName: fileName,
+            message: message
+          }
+          error.push(param)
+          // 当计的次数超过的时候执行
+          if (time >= filesHash.length) {
+            singlePercentage.percentage = 100
+            // TODO 先设置2秒，后面对接文件接口后设置为1
+            setTimeout(function() {
+            }, 2000)
+            return new Promise(resolve => {
+              patchSignRes.set('success', success)
+              patchSignRes.set('error', error)
+              resolve(patchSignRes)
+            })
+          }
+          // PatchSignApi.errorMessage(message)
+          // 递归
+          PatchSignApi.signPdf(filesHash, Dn, pin, success, error, patchSignRes, time, singlePercentage)
         }
-        error.push(param)
-        PatchSignApi.failMessage(message)
-      },
-      error(message) {
-        // 进入该error代表该文件签章失败，自动结束此次循环，并添加信息
-        // TODO 记录失败的文件信息
-        const param = {
-          fileId: fileId,
-          fileName: fileName,
-          message: message
-        }
-        error.push(param)
-        PatchSignApi.errorMessage(message)
-      }
+      })
     })
+    return p
   }
   /**
    * 根据位置获取摘要
@@ -380,46 +449,52 @@ export default class PatchSignApi {
    */
   static patchSign(patchSignRes, error, success, filesHash, pin, Dn, singlePercentage) {
     let time = 0
-    // 这个地方应该添加一个成功状态
-    for (let i = 0; i <= filesHash.length; i++) {
-      let fileHash
-      let fileName
-      let fileId
-      time = time + 1
-      if (i !== filesHash.length) { // 轮询次数 +1
-        if (filesHash[i].digestStatus === true) { // 通过定义一个局部变量i遍历获取map里面的所有key值
-          fileHash = filesHash[i].digest
-          fileName = filesHash[i].fileName
-          fileId = filesHash[i].fileId
-        } else {
-          // TODO 记录失败的文件信息
-          const param = {
-            fileId: filesHash[i].fileId,
-            fileName: filesHash[i].fileName,
-            message: filesHash[i].digest
-          }
-          error.push(param)
-          continue
-        }
-        // TODO 最后再装载
-        // 处理这个里的异常
-        PatchSignApi.signPdf(fileId, fileName, fileHash, Dn, pin, success, error)
-      } else {
-        // 最后一次轮询条件：i === filesHash.length，这个时候数组已空
-      }
-    }
-    // 当计的次数超过的时候执行
-    if (time >= filesHash.length + 1) {
-      singlePercentage.percentage = 100
-      // TODO 先设置2秒，后面对接文件接口后设置为1
-      setTimeout(function() {
-      }, 2000)
-      return new Promise(resolve => {
-        patchSignRes.set('success', success)
-        patchSignRes.set('error', error)
-        resolve(patchSignRes)
+    // TODO 最后再装载
+    // 处理这个里的异常
+    return new Promise((resolve) => {
+      PatchSignApi.signPdf(filesHash, Dn, pin, success, error, patchSignRes, time, singlePercentage).then(res => {
+        resolve(res)
       })
-    }
+    })
+    // for (let i = 0; i < filesHash.length; i++) {
+    //   let fileHash
+    //   let fileName
+    //   let fileId
+    //   // time = time + 1
+    //   if (i !== filesHash.length) { // 轮询次数 +1
+    //     if (filesHash[i].digestStatus === true) { // 通过定义一个局部变量i遍历获取map里面的所有key值
+    //       fileHash = filesHash[i].digest
+    //       fileName = filesHash[i].fileName
+    //       fileId = filesHash[i].fileId
+    //     } else {
+    //       // TODO 记录失败的文件信息
+    //       const param = {
+    //         fileId: filesHash[i].fileId,
+    //         fileName: filesHash[i].fileName,
+    //         message: filesHash[i].digest
+    //       }
+    //       error.push(param)
+    //       continue
+    //     }
+    //     // TODO 最后再装载
+    //     // 处理这个里的异常
+    //     PatchSignApi.signPdf(fileId, fileName, fileHash, Dn, pin, success, error, time, filesHash, patchSignRes, singlePercentage)
+    //   } else {
+    //     // 最后一次轮询条件：i === filesHash.length，这个时候数组已空
+    //   }
+    // }
+    // // 当计的次数超过的时候执行
+    // if (time >= filesHash.length) {
+    //   singlePercentage.percentage = 100
+    //   // TODO 先设置2秒，后面对接文件接口后设置为1
+    //   setTimeout(function() {
+    //   }, 2000)
+    //   return new Promise(resolve => {
+    //     patchSignRes.set('success', success)
+    //     patchSignRes.set('error', error)
+    //     resolve(patchSignRes)
+    //   })
+    // }
   }
   // 失败回调
   static failMessage(message) {

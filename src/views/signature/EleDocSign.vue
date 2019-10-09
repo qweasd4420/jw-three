@@ -425,6 +425,7 @@ export default {
         console.log(e.get('error'))
         // 关闭模态窗口，关闭进度条
         this.dialogPositionVisible = false
+        this.progressVisible = false
         // 清空表单
         this.resetForm('patchPositionParam')
       })
