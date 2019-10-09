@@ -6,7 +6,7 @@
         <el-button type="primary" size="small" @click="searchPdf">搜索</el-button>
         <el-button type="primary" size="small" @click="patchSignPosition">按位置批签</el-button>
         <el-button type="primary" size="small" @click="patchSignKeyWord">按关键字批签</el-button>
-        <el-button type="primary" size="small" @click="verifySignFiles">批量验签</el-button>
+        <el-button type="primary" size="small" @click="verifySignFiles">验证监控</el-button>
       </div>
     </el-header>
     <!-- 列表数据展示 -->
@@ -221,6 +221,11 @@ export default {
         percentage: 0, // 百分比
         signStatus: '' // 状态
       },
+      // patchSignRes: new Map(),
+      patchSignRes: {
+        success: [],
+        error: []
+      },
       dialogSingleShow: false,
       dialogKeywordVisible: false,
       dialogKeywordSingleVisible: false,
@@ -291,6 +296,20 @@ export default {
     }
   },
   watch: {
+    'patchSignRes': {
+      deep: true,
+      handler: function(newVal, oldVal) {
+        console.log('监控')
+        console.log(newVal)
+        // 关闭模态窗口，关闭进度条
+        this.dialogPositionVisible = false
+        this.dialogKeywordVisible = false
+        this.progressVisible = false
+        // 清空输入
+        /* this.$refs['patchPositionParam'].resetFields()
+        this.$refs['patchKeywordParam'].resetFields() */
+      }
+    }
   },
   mounted() {
     this.queryPage(this.queryParam)
@@ -418,17 +437,9 @@ export default {
       console.log('待签章的文件为:' + JSON.stringify(this.patchPositionParam.selectFiles))
       console.log(this.patchPositionParam.selectFileIds)
       // 开始签章
+      this.singlePercentage.percentage = 0
       this.progressVisible = true
-      PatchSignApi.patchPositionOrKeyword(this.patchPositionParam, this.singlePercentage).then((e) => {
-        console.log(e)
-        console.log(e.get('success'))
-        console.log(e.get('error'))
-        // 关闭模态窗口，关闭进度条
-        this.dialogPositionVisible = false
-        this.progressVisible = false
-        // 清空表单
-        this.resetForm('patchPositionParam')
-      })
+      PatchSignApi.patchPositionOrKeyword(this.patchPositionParam, this.singlePercentage, this.patchSignRes)
     },
     keywordSignSure() { // 按关键字批签确认
       // 先清空
@@ -441,15 +452,9 @@ export default {
       console.log(this.patchPositionParam.selectFileIds)
       // console.log(PatchSignApi.patchPositionOrKeyword(this.patchKeywordParam))
       // 开始签章
-      PatchSignApi.patchPositionOrKeyword(this.patchKeywordParam, this.singlePercentage).then((e) => {
-        console.log(e)
-        console.log(e.get('success'))
-        console.log(e.get('error'))
-        // 关闭模态窗口，关闭进度条
-        this.dialogKeywordVisible = false
-        // 清空表单
-        this.resetForm('patchKeywordParam')
-      })
+      this.singlePercentage.percentage = 0
+      this.progressVisible = true
+      PatchSignApi.patchPositionOrKeyword(this.patchKeywordParam, this.singlePercentage, this.patchSignRes)
     },
     resetForm(formName) {
       this.$refs[formName].resetFields()
@@ -474,14 +479,10 @@ export default {
         console.log(e)
       })
     },
-    // 批量验签
+    // 校验修改
     verifySignFiles() {
-      const param = {
-        'fileIds': ['090271012a59e07ac991489bb8e30a06f56a0ca5', '090271012a59e07ac991489bb8e30a06f56a0ca5', '090271012a59e07ac991489bb8e30a06f56a0ca5']
-      }
-      SealManageApi.verifySignFiles(param).then(res => {
-        console.log(res)
-      })
+      console.log('进入xiugai')
+      this.patchSignRes.a = 'b'
     }
   }
 }

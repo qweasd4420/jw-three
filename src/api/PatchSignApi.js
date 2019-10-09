@@ -9,9 +9,10 @@ export default class PatchSignApi {
    * 批签
    * @param patchParam
    * @param singlePercentage
+   * @param patchSignRes
    * @param callback
    */
-  static patchPositionOrKeyword(patchParam, singlePercentage, callback) {
+  static patchPositionOrKeyword(patchParam, singlePercentage, patchSignRes, callback) {
     console.log('获取的值为:' + patchParam)
     console.log('检测钥匙Pin码，事件绑定成功')
     // 批量下载文件
@@ -38,7 +39,6 @@ export default class PatchSignApi {
     console.log('拼接后字符串为:' + fileInfos)
 
     // TODO 批签返回结果
-    const patchSignRes = new Map()
     const success = []
     const error = []
 
@@ -63,180 +63,155 @@ export default class PatchSignApi {
     }
     console.log('进入签章方法' + signFlag + ':' + xPos + ':' + yPos + ':' + pageNum)
     // 校验钥匙Pin码
-    const p3 = new Promise((resolve) => {
-      UTCMiddleWare.OpenKey({
-        pin: pin,
-        success(data) {
-          // 获取证书信息
-          /* 进度条提醒1 稍后加 */
-          console.log('pin码正确')
-          UTCMiddleWare.GetCertInfo({
-            success(data) {
-              console.log(JSON.stringify(data))
-              const dataDN = JSON.stringify(data)
-              const dataE = new Function('return' + dataDN)()
-              Dn = dataE[0].DN
-              console.log(Dn)
-            },
-            fail(message) {
-              // 此处失败为整体失败
-              PatchSignApi.failMessage(message)
-              return
-            },
-            error(message) {
-              // 此处失败为整体失败
-              PatchSignApi.errorMessage(message)
-              return
+    UTCMiddleWare.OpenKey({
+      pin: pin,
+      success(data) {
+        // 获取证书信息
+        /* 进度条提醒1 稍后加 */
+        console.log('pin码正确')
+        UTCMiddleWare.GetCertInfo({
+          success(data) {
+            console.log(JSON.stringify(data))
+            const dataDN = JSON.stringify(data)
+            const dataE = new Function('return' + dataDN)()
+            Dn = dataE[0].DN
+            console.log(Dn)
+          },
+          fail(message) {
+            // 此处失败为整体失败
+            PatchSignApi.failMessage(message)
+            return
+          },
+          error(message) {
+            // 此处失败为整体失败
+            PatchSignApi.errorMessage(message)
+            return
+          }
+        })
+        // 获取印章/签名信息（需要加个判断，用户是点击的印章还是签名）
+        UTCMiddleWare.GetSealInfo({
+          pin: pin,
+          success(data) {
+            let signInfo = null
+            // 11签章，12签字
+            if (signFlag === '1') { // 签章
+              signType = '11'
+            } else if (signFlag === '0') { // 签名
+              signType = '12'
             }
-          })
-          // 获取印章/签名信息（需要加个判断，用户是点击的印章还是签名）
-          const p2 = new Promise((resolve) => {
-            UTCMiddleWare.GetSealInfo({
-              pin: pin,
-              success(data) {
-                let signInfo = null
-                // 11签章，12签字
-                if (signFlag === '1') { // 签章
-                  signType = '11'
-                } else if (signFlag === '0') { // 签名
-                  signType = '12'
-                }
-                for (let i = 0; i < data.length; i++) {
-                  // TODO 判断是印章还是签名--这个之后需要修改，目前测试印章是11代表签章，12代表签名，当然这个地方也可能出现异常
-                  if (data[i].id === signType) {
-                    signInfo = data[i].value
-                    break
-                  }
-                }
-                // 调用后台接口，根据位置或者关键字进行签章（需要加个判断，判断是位置还是关键字签章）
-                if (keyword === undefined || keyword === null || keyword === '') {
-                  // 按位置获取PDF摘要（这步在批签内要修改，以符合批签需求）
-                  const param = {
-                    x: xPos,
-                    y: yPos,
-                    sealInfoBase64: signInfo,
-                    strReason: '',
-                    strLocation: '',
-                    fileInfos: {
-                      fileInfos: fileInfos
-                    },
-                    pageNo: pageNum
-                  }
-                  // 此处异常处理需要，无论如何都会返回值，是否应该添加一个成功状态
-                  const p1 = new Promise((resolve) => {
-                    PatchSignApi.getPdfStdDigests(param).then(res => {
-                      if (res.status === 0) {
-                        filesHash = res.data
-                      } else {
-                        // 全部失败，给出提示
-                        PatchSignApi.failMessage('获取摘要信息，接口调用失败')
-                        return
-                      }
-                      const p = new Promise((resolve) => {
-                        singlePercentage.percentage = 66
-                        PatchSignApi.patchSign(patchSignRes, error, success, filesHash, pin, Dn, singlePercentage).then(res => {
-                          // 返回参数
-                          console.log(res)
-                          resolve(res)
-                        })
-                      })
-                      resolve(p)
-                    })
-                  })
-                  resolve(p1)
+            for (let i = 0; i < data.length; i++) {
+              // TODO 判断是印章还是签名--这个之后需要修改，目前测试印章是11代表签章，12代表签名，当然这个地方也可能出现异常
+              if (data[i].id === signType) {
+                signInfo = data[i].value
+                break
+              }
+            }
+            // 调用后台接口，根据位置或者关键字进行签章（需要加个判断，判断是位置还是关键字签章）
+            if (keyword === undefined || keyword === null || keyword === '') {
+              // 按位置获取PDF摘要（这步在批签内要修改，以符合批签需求）
+              const param = {
+                x: xPos,
+                y: yPos,
+                sealInfoBase64: signInfo,
+                strReason: '',
+                strLocation: '',
+                fileInfos: {
+                  fileInfos: fileInfos
+                },
+                pageNo: pageNum
+              }
+              // 此处异常处理需要，无论如何都会返回值，是否应该添加一个成功状态
+              PatchSignApi.getPdfStdDigests(param).then(res => {
+                if (res.status === 0) {
+                  filesHash = res.data
                 } else {
-                  // 根据偏移方位修正xPos和yPos的值
-                  let x
-                  let y
-                  if (isDeviation !== undefined && isDeviation != null) {
-                    switch (isDeviation) {
-                      case '0': // 不偏移
-                        x = 0
-                        y = 0
-                        break
-                      case '1': // 向上偏移
-                        x = 0
-                        y = -16
-                        break
-                      case '2': // 向下偏移
-                        x = 0
-                        y = 8
-                        break
-                      case '3': // 向左偏移
-                        x = -10
-                        y = 0
-                        break
-                      case '4': // 向右偏移
-                        x = 10
-                        y = 0
-                        break
-                      default: // 特殊情况不偏移
-                        x = 0
-                        y = 0
-                        break
-                    }
-                  } else {
+                  // 全部失败，给出提示
+                  PatchSignApi.failMessage('获取摘要信息，接口调用失败')
+                  return
+                }
+                singlePercentage.percentage = 66
+                PatchSignApi.patchSign(patchSignRes, error, success, filesHash, pin, Dn, singlePercentage)
+              })
+            } else {
+              // 根据偏移方位修正xPos和yPos的值
+              let x
+              let y
+              if (isDeviation !== undefined && isDeviation != null) {
+                switch (isDeviation) {
+                  case '0': // 不偏移
                     x = 0
                     y = 0
-                  }
-                  const param = {
-                    x: x,
-                    y: y,
-                    sealInfoBase64: signInfo,
-                    strReason: '',
-                    strLocation: '',
-                    fileInfos: {
-                      fileInfos: fileInfos
-                    },
-                    keyStr: keyword,
-                    signMode: signMode
-                  }
-                  // 按关键字获取PDF摘要
-                  const p1 = new Promise((resolve) => {
-                    PatchSignApi.getPdfStdDigestOnKws(param).then(res => {
-                      if (res.status === 0) {
-                        filesHash = res.data
-                      } else {
-                        // 全部失败，给出提示
-                        PatchSignApi.failMessage('获取摘要信息，接口调用失败')
-                        return
-                      }
-                      const p = new Promise((resolve) => {
-                        singlePercentage.percentage = 65
-                        PatchSignApi.patchSign(patchSignRes, error, success, filesHash, pin, Dn, singlePercentage).then(res => {
-                          console.log(res)
-                          resolve(res)
-                        })
-                      })
-                      resolve(p)
-                    })
-                  })
-                  resolve(p1)
+                    break
+                  case '1': // 向上偏移
+                    x = 0
+                    y = -16
+                    break
+                  case '2': // 向下偏移
+                    x = 0
+                    y = 8
+                    break
+                  case '3': // 向左偏移
+                    x = -10
+                    y = 0
+                    break
+                  case '4': // 向右偏移
+                    x = 10
+                    y = 0
+                    break
+                  default: // 特殊情况不偏移
+                    x = 0
+                    y = 0
+                    break
                 }
-              },
-              fail(message) {
-                // 此处失败为整体失败
-                PatchSignApi.failMessage(message)
-              },
-              error(message) {
-                // 此处失败为整体失败，整体失败的需要return
-                PatchSignApi.errorMessage(message)
+              } else {
+                x = 0
+                y = 0
               }
-            })
-          })
-          resolve(p2)
-        },
-        fail(message) {
-          // 此处失败为整体失败
-          PatchSignApi.failMessage(message)
-        },
-        error(message) {
-          // 此处失败为整体失败
-          PatchSignApi.errorMessage(message)
-        }
-      })
+              const param = {
+                x: x,
+                y: y,
+                sealInfoBase64: signInfo,
+                strReason: '',
+                strLocation: '',
+                fileInfos: {
+                  fileInfos: fileInfos
+                },
+                keyStr: keyword,
+                signMode: signMode
+              }
+              // 按关键字获取PDF摘要
+              PatchSignApi.getPdfStdDigestOnKws(param).then(res => {
+                if (res.status === 0) {
+                  filesHash = res.data
+                } else {
+                  // 全部失败，给出提示
+                  PatchSignApi.failMessage('获取摘要信息，接口调用失败')
+                  return
+                }
+                singlePercentage.percentage = 65
+                PatchSignApi.patchSign(patchSignRes, error, success, filesHash, pin, Dn, singlePercentage)
+              })
+            }
+          },
+          fail(message) {
+            // 此处失败为整体失败
+            PatchSignApi.failMessage(message)
+          },
+          error(message) {
+            // 此处失败为整体失败，整体失败的需要return
+            PatchSignApi.errorMessage(message)
+          }
+        })
+      },
+      fail(message) {
+        // 此处失败为整体失败
+        PatchSignApi.failMessage(message)
+      },
+      error(message) {
+        // 此处失败为整体失败
+        PatchSignApi.errorMessage(message)
+      }
     })
-    return p3
   }
 
   /**
@@ -319,11 +294,10 @@ export default class PatchSignApi {
             // TODO 先设置2秒，后面对接文件接口后设置为1
             setTimeout(function() {
             }, 2000)
-            return new Promise(resolve => {
-              patchSignRes.set('success', success)
-              patchSignRes.set('error', error)
-              resolve(patchSignRes)
-            })
+            // 最终值返回
+            patchSignRes.success = success
+            patchSignRes.error = error
+            return
           }
           // 递归
           PatchSignApi.signPdf(filesHash, Dn, pin, success, error, patchSignRes, time, singlePercentage)
@@ -337,13 +311,6 @@ export default class PatchSignApi {
           }
           error.push(param)
         }).then((e) => {
-          // 阻止事件冒泡
-          console.log(e)
-          // 递归
-          // return new Promise(resolve => {
-          //   resolve(e)
-          // })
-          // console.log('阻止promise冒泡')
         })
       },
       fail(message) {
@@ -363,11 +330,9 @@ export default class PatchSignApi {
           // TODO 先设置2秒，后面对接文件接口后设置为1
           setTimeout(function() {
           }, 2000)
-          return new Promise(resolve => {
-            patchSignRes.set('success', success)
-            patchSignRes.set('error', error)
-            resolve(patchSignRes)
-          })
+          patchSignRes.set('success', success)
+          patchSignRes.set('error', error)
+          return
         }
         // 递归
         PatchSignApi.signPdf(filesHash, Dn, pin, success, error, patchSignRes, time, singlePercentage)
@@ -388,11 +353,9 @@ export default class PatchSignApi {
           // TODO 先设置2秒，后面对接文件接口后设置为1
           setTimeout(function() {
           }, 2000)
-          return new Promise(resolve => {
-            patchSignRes.set('success', success)
-            patchSignRes.set('error', error)
-            resolve(patchSignRes)
-          })
+          patchSignRes.set('success', success)
+          patchSignRes.set('error', error)
+          return
         }
         // PatchSignApi.errorMessage(message)
         // 递归
@@ -451,50 +414,7 @@ export default class PatchSignApi {
     let time = 0
     // TODO 最后再装载
     // 处理这个里的异常
-    return new Promise((resolve) => {
-      PatchSignApi.signPdf(filesHash, Dn, pin, success, error, patchSignRes, time, singlePercentage).then(res => {
-        console.log(res)
-      })
-    })
-    // for (let i = 0; i < filesHash.length; i++) {
-    //   let fileHash
-    //   let fileName
-    //   let fileId
-    //   // time = time + 1
-    //   if (i !== filesHash.length) { // 轮询次数 +1
-    //     if (filesHash[i].digestStatus === true) { // 通过定义一个局部变量i遍历获取map里面的所有key值
-    //       fileHash = filesHash[i].digest
-    //       fileName = filesHash[i].fileName
-    //       fileId = filesHash[i].fileId
-    //     } else {
-    //       // TODO 记录失败的文件信息
-    //       const param = {
-    //         fileId: filesHash[i].fileId,
-    //         fileName: filesHash[i].fileName,
-    //         message: filesHash[i].digest
-    //       }
-    //       error.push(param)
-    //       continue
-    //     }
-    //     // TODO 最后再装载
-    //     // 处理这个里的异常
-    //     PatchSignApi.signPdf(fileId, fileName, fileHash, Dn, pin, success, error, time, filesHash, patchSignRes, singlePercentage)
-    //   } else {
-    //     // 最后一次轮询条件：i === filesHash.length，这个时候数组已空
-    //   }
-    // }
-    // // 当计的次数超过的时候执行
-    // if (time >= filesHash.length) {
-    //   singlePercentage.percentage = 100
-    //   // TODO 先设置2秒，后面对接文件接口后设置为1
-    //   setTimeout(function() {
-    //   }, 2000)
-    //   return new Promise(resolve => {
-    //     patchSignRes.set('success', success)
-    //     patchSignRes.set('error', error)
-    //     resolve(patchSignRes)
-    //   })
-    // }
+    PatchSignApi.signPdf(filesHash, Dn, pin, success, error, patchSignRes, time, singlePercentage)
   }
   // 失败回调
   static failMessage(message) {
