@@ -44,7 +44,7 @@
       top="5px"
       :before-close="handleClose"
     >
-      <iframe ref="child" :src="iframePdf" :width="iframeWidth" :height="iframeHigh" frameborder="0"></iframe>
+      <iframe ref="child" :src="iframePdf" :width="iframeWidth" :height="iframeHigh" frameborder="0" />
     </el-dialog>
     <!-- 按位置单签 -->
     <el-dialog
@@ -191,8 +191,8 @@
       :before-close="handleClose"
       align="center"
     >
-      <el-progress v-if="singlePercentage.percentage!==100" type="circle" :percentage="singlePercentage.percentage"></el-progress>
-      <el-progress v-if="singlePercentage.percentage===100" type="circle" :percentage="singlePercentage.percentage" status="success"></el-progress>
+      <el-progress v-if="singlePercentage.percentage!==100" type="circle" :percentage="singlePercentage.percentage" />
+      <el-progress v-if="singlePercentage.percentage===100" type="circle" :percentage="singlePercentage.percentage" status="success" />
     </el-dialog>
   </el-container>
 </template>
@@ -239,7 +239,7 @@ export default {
       currentPage: 1,
       queryParam: {
         data: {
-          fileIds: ['09027101bf6d952cc7f74c97b9a7bcdf2dc90f1f', '0902710137b29bf55ddf4a36ae02a53498ff579e', '09027101bf6d952cc7f74c97b9a7bcdf2dc90f1f']
+          fileIds: ['0902710135653316f84b4f5d8359dec4e030b5ac', '0902710137b29bf55ddf4a36ae02a53498ff579e', '09027101bf6d952cc7f74c97b9a7bcdf2dc90f1f']
         },
         pageInfo: {
           pageNum: 1,
