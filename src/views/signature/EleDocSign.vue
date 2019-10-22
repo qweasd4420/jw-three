@@ -239,7 +239,7 @@ export default {
       currentPage: 1,
       queryParam: {
         data: {
-          fileIds: ['09027101b008c273dd6b4a40801087a1e9136670', '09027101b008c273dd6b4a40801087a1e9136670', '09027101bf6d952cc7f74c97b9a7bcdf2dc90f1f']
+          fileIds: ['09027101b008c273dd6b4a40801087a1e9136670', '09027101cf8ab73e630d499b90609bacc5ef0f3a', '09027101bf6d952cc7f74c97b9a7bcdf2dc90f1f']
         },
         pageInfo: {
           pageNum: 1,
