@@ -377,7 +377,6 @@ function UTCMiddleWare_Api() {
     s.OpenKey.prototype.OpenEKey(json)
   }
   _s.OpenKey.prototype.OpenEKey = function(json) {
-    debugger
     if (json.pin === undefined || json.pin === '') {
       s.errorcallback(json, 'fail', '0x07000004', s.errorstate[0x07000004])
     } else {

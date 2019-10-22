@@ -222,7 +222,7 @@ export default {
         signStatus: '' // 状态
       },
       // patchSignRes: new Map(),
-      patchSignRes: {
+      patchSignRes: { // 批签返回参数
         success: [],
         error: []
       },
@@ -239,7 +239,7 @@ export default {
       currentPage: 1,
       queryParam: {
         data: {
-          fileIds: ['0902710135653316f84b4f5d8359dec4e030b5ac', '0902710137b29bf55ddf4a36ae02a53498ff579e', '09027101bf6d952cc7f74c97b9a7bcdf2dc90f1f']
+          fileIds: ['09027101b008c273dd6b4a40801087a1e9136670', '09027101b008c273dd6b4a40801087a1e9136670', '09027101bf6d952cc7f74c97b9a7bcdf2dc90f1f']
         },
         pageInfo: {
           pageNum: 1,
@@ -300,6 +300,7 @@ export default {
       deep: true,
       handler: function(newVal, oldVal) {
         console.log('监控')
+        // TODO 批签返回值
         console.log(newVal)
         // 关闭模态窗口，关闭进度条
         this.dialogPositionVisible = false
@@ -465,6 +466,7 @@ export default {
       this.progressVisible = true
       SingleSignApi.singleSignPosition(this.singlePositionParam, this.singlePercentage).then((e) => {
         console.log('进入')
+        // TODO 单签返回值
         console.log(e)
         // 关闭模态窗口，关闭进度条
         this.progressVisible = false
