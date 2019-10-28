@@ -2,12 +2,13 @@
   <el-container>
     <el-aside
       v-if="isCollapse"
-      style="background-color: rgb(238, 241, 246);padding:2px 6px">
+      style="background-color: rgb(238, 241, 246);padding:2px 6px"
+    >
       <el-input
         v-model="filterText"
         style="padding: 18px 0 18px 0;background: #ffffff;"
-        placeholder="输入关键字进行过滤">
-      </el-input>
+        placeholder="输入关键字进行过滤"
+      />
       <!--左侧内容-->
       <el-tree
         ref="tree"
@@ -25,32 +26,32 @@
       >
         <span slot-scope="{ node, data }" class="custom-tree-node">
           <span>
-            <template v-if="data.grade !== undefined && data.grade === '2'" >
-              <i class="el-icon-document"></i>&nbsp;{{ node.label }}
+            <template v-if="data.grade !== undefined && data.grade === '2'">
+              <i class="el-icon-document" />&nbsp;{{ node.label }}
             </template>
             <template v-if="data.grade !== undefined && (data.grade === '1' || data.grade === '0')">
-              <i class="iconfont icon-icon_workfile_line"></i>&nbsp;{{ node.label }}
+              <i class="iconfont icon-icon_workfile_line" />&nbsp;{{ node.label }}
             </template>
           </span>
         </span>
       </el-tree>
-      <div  id="menuThree" class="topTriangle" v-show="menuThreeVisible"  style="width:126px;height:60px;border:1px solid #d3d7d4;background:#fff;z-index:9999;border-radius: 5px">
+      <div v-show="menuThreeVisible" id="menuThree" class="topTriangle" style="width:126px;height:60px;border:1px solid #d3d7d4;background:#fff;z-index:9999;border-radius: 5px">
         <ul style="margin:0;padding:0;list-style:none;text-align: left">
-          <li style="margin:0px 10px;font-size:14px;line-height:30px;height:30px;" @click="createFolder"><i class="iconfont icon-icon_workfile_line" style="padding-right:10px;"></i>新建文件夹</li>
-          <li style="margin:0px 10px;font-size:14px;line-height:30px;height:30px;" @click="createPage"><i class="el-icon-document" style="padding-right:10px;"></i>新建页面</li>
+          <li style="margin:0px 10px;font-size:14px;line-height:30px;height:30px;" @click="createFolder"><i class="iconfont icon-icon_workfile_line" style="padding-right:10px;" />新建文件夹</li>
+          <li style="margin:0px 10px;font-size:14px;line-height:30px;height:30px;" @click="createPage"><i class="el-icon-document" style="padding-right:10px;" />新建页面</li>
         </ul>
       </div>
-      <div  id="menuTwo" class="topTriangle" v-show="menuTwoVisible"  style="width:126px;height:90px;border:1px solid #d3d7d4;background:#fff;z-index:9999;border-radius: 5px">
+      <div v-show="menuTwoVisible" id="menuTwo" class="topTriangle" style="width:126px;height:90px;border:1px solid #d3d7d4;background:#fff;z-index:9999;border-radius: 5px">
         <ul style="margin:0;padding:0;list-style:none;text-align: left">
-          <li style="margin:0px 10px;font-size:14px;line-height:30px;height:30px;" @click="createFolder"><i class="iconfont icon-icon_workfile_line" style="padding-right:10px;"></i>新建文件夹</li>
-          <li style="margin:0px 10px;font-size:14px;line-height:30px;height:30px;" @click="createPage"><i class="el-icon-document" style="padding-right:10px;"></i>新建页面</li>
-          <li style="margin:0px 10px;font-size:14px;line-height:30px;height:30px;" @click="deleteFolder"><i class="el-icon-delete" style="padding-right:10px;"></i>删除</li>
+          <li style="margin:0px 10px;font-size:14px;line-height:30px;height:30px;" @click="createFolder"><i class="iconfont icon-icon_workfile_line" style="padding-right:10px;" />新建文件夹</li>
+          <li style="margin:0px 10px;font-size:14px;line-height:30px;height:30px;" @click="createPage"><i class="el-icon-document" style="padding-right:10px;" />新建页面</li>
+          <li style="margin:0px 10px;font-size:14px;line-height:30px;height:30px;" @click="deleteFolder"><i class="el-icon-delete" style="padding-right:10px;" />删除</li>
         </ul>
       </div>
-      <div id="menuOne" class="topTriangle"  v-show="menuOneVisible" style="width:126px;height:60px;border:1px solid #d3d7d4;background:#fff;z-index:9999;border-radius: 5px">
+      <div v-show="menuOneVisible" id="menuOne" class="topTriangle" style="width:126px;height:60px;border:1px solid #d3d7d4;background:#fff;z-index:9999;border-radius: 5px">
         <ul style="margin:0;padding:0;list-style:none;text-align: left">
-          <li style="margin:0px 10px;font-size:14px;line-height:30px;height:30px;" @click="editPage"><i class="el-icon-edit" style="padding-right:10px;"></i>编辑</li>
-          <li style="margin:0px 10px;font-size:14px;line-height:30px;height:30px;" @click="deletePage"><i class="el-icon-delete" style="padding-right:10px;"></i>删除</li>
+          <li style="margin:0px 10px;font-size:14px;line-height:30px;height:30px;" @click="editPage"><i class="el-icon-edit" style="padding-right:10px;" />编辑</li>
+          <li style="margin:0px 10px;font-size:14px;line-height:30px;height:30px;" @click="deletePage"><i class="el-icon-delete" style="padding-right:10px;" />删除</li>
         </ul>
       </div>
     </el-aside>
@@ -58,7 +59,7 @@
     <el-container>
       <!--右侧内容-->
       <!--<router-view/>-->
-      <tree-main style="width: 100%;" :view-name="viewName" :view-info="viewInfo"></tree-main>
+      <tree-main style="width: 100%;" :view-name="viewName" :view-info="viewInfo" />
       <el-dialog
         title=""
         :visible.sync="dialogAddFolder"
@@ -69,10 +70,10 @@
         <div style="background: #ffffff;width: 100%;height:150px;position:relative;">
           <el-form ref="addFolder" :model="addFolder" :rules="rules" label-width="150px" style="position: absolute;top:20%;left:40%;transform: translate(-50%,-50%)">
             <el-form-item label="文件夹名称" prop="folderName">
-              <el-input v-model="addFolder.folderName" placeholder="请输入文件夹名称" validate-event clearable style="width: 180px"/>
+              <el-input v-model="addFolder.folderName" placeholder="请输入文件夹名称" validate-event clearable style="width: 180px" />
             </el-form-item>
             <el-form-item label="文件夹描述" prop="folderDesc">
-              <el-input v-model="addFolder.folderDesc" placeholder="请输入文件夹描述" validate-event clearable style="width: 180px"/>
+              <el-input v-model="addFolder.folderDesc" placeholder="请输入文件夹描述" validate-event clearable style="width: 180px" />
             </el-form-item>
           </el-form>
           <span slot="footer" class="dialog-footer" style="position: absolute;top:70%;left:50%;transform: translate(-50%,-50%)">
@@ -112,7 +113,7 @@
         :before-close="editPageHandleClose"
         align="center"
       >
-        <iframe ref="editPageIframe" :src="editPageUrl" :width="iframe.iframeWidth" :height="iframe.iframeHigh" frameborder="0" :style="iframe.iframeStyle"></iframe>
+        <iframe ref="editPageIframe" :src="editPageUrl" :width="iframe.iframeWidth" :height="iframe.iframeHigh" frameborder="0" :style="iframe.iframeStyle" />
       </el-dialog>
     </el-container>
   </el-container>
@@ -379,8 +380,8 @@ export default {
       // 编辑页面
       // 打开model窗口，在model窗口中打开编辑页面
       this.dialogEditPage = true
-      // this.editPageUrl = 'http://192.100.2.67:13035/#/'
-      this.editPageUrl = 'http://localhost:8080/#/'
+      this.editPageUrl = 'http://192.100.2.67:13035/#/'
+      // this.editPageUrl = 'http://localhost:8080/#/'
       let _scrollWidth = document.body.scrollWidth
       const _scrollHeight = document.body.scrollHeight
       const iTop = window.screen.height
