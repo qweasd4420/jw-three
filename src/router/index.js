@@ -6,7 +6,7 @@ Vue.use(Router)
 /* Layout */
 import Layout from '@/layout'
 import signatureRouter from './modules/signatureRouter'
-import groupRouter from './modules/grouptxl'
+// import groupRouter from "./modules/grouptxl";
 import dragpageRouter from './modules/dragpageRouter'
 
 /* Router Modules */
@@ -102,14 +102,13 @@ export const constantRoutes = [
  * the routes that need to be dynamically loaded based on user roles
  */
 export const asyncRoutes = [
-
   /** when your routing map is too long, you can split it into small modules **/
   // componentsRouter,
   // chartsRouter,
   // nestedRouter,
   // tableRouter,
   signatureRouter,
-  // groupRouter,
+  // groupRouter, //sql编辑人机界面
   dragpageRouter,
   {
     path: '/theme',
@@ -127,11 +126,12 @@ export const asyncRoutes = [
   { path: '*', redirect: '/404', hidden: true }
 ]
 
-const createRouter = () => new Router({
-  // mode: 'history', // require service support
-  scrollBehavior: () => ({ y: 0 }),
-  routes: constantRoutes
-})
+const createRouter = () =>
+  new Router({
+    // mode: 'history', // require service support
+    scrollBehavior: () => ({ y: 0 }),
+    routes: constantRoutes
+  })
 
 const router = createRouter()
 
